@@ -13,7 +13,18 @@ How to make a Sourceforge release:
 
 
 How to tag:
-    - tag Subversion with tag "version_X_Y" (svn copy -m "tag version X.Y" https://dejavu.svn.sourceforge.net/svnroot/dejavu/trunk https://dejavu.svn.sourceforge.net/svnroot/dejavu/tags/version_X_Y with X and Y properly replaced)
+    - create your branches and tags directories within SVN (good explanation http://ariejan.net/2006/11/21/svn-how-to-release-software-properly/)
+    - All this should work from windows command line
+
+$ svn mkdir -m "Creating branches directory" https://keepasssync.svn.sourceforge.net/svnroot/keepasssync/branches
+$ svn mkdir -m "Creating tags directory" https://keepasssync.svn.sourceforge.net/svnroot/keepasssync/tags
+$ svn copy -m "Tag release 2.05.2" https://keepasssync.svn.sourceforge.net/svnroot/keepasssync/trunk https://keepasssync.svn.sourceforge.net/svnroot/keepasssync/tags/keepasssync-2.05.2
+
+or just use the previous paths through the tortoiseSVN gui...
+
+
+
+
 
 
 How to upload the package:
