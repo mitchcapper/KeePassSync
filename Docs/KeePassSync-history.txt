@@ -1,0 +1,33 @@
+2008-07-30: v2.05.2
+- On open of DB, temp entry no longer hangs around
+- On first creation of syncEntry in database, sync doesn't fail because mergeIn() can't find file
+- On save, we sync, not just export.
+- Default button on openForm correct
+- On options form, switching providers now changes the entry in the edit entry form
+- Detects timeout with FTP/SCP provider
+- When plugins are in a subdirectory, KeePassSync still works
+- Completely removed ProviderInfo references
+- Providers are only initialized once at startup
+- Providers are only stored within the main interface, all other references just use a key and go through the main interface
+- Ripped out redundant ProviderInfo struct
+- Visual Studio solution now in VS2008 format
+- Unified options GUI for multiple online providers.
+- New FTP/SCP provider using Putty's plink.exe and pscp.exe
+- Fixed many stability bugs for options dialog
+- Changed the name of DigitalBucket to digitalbucket.net
+- Fixed crash when no KeePassSync providers are present
+- Updated docs
+- Added documents directory to the tree
+
+
+2008-05-27: v2.05.1
+- Added documents to the tree and release packages
+- Removed reliance upon registry, it's still used but not required
+- Fixed issue of not being able to find login info after opening file from online provider
+- Cleaned up options interface.
+- Better code documentation
+- Post build events
+- Copyright info
+
+2008-05-12: v2.05
+- Project started

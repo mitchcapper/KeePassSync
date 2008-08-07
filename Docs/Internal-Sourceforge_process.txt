@@ -1,0 +1,63 @@
+How to make a Sourceforge release:
+    - Update the output version numbers in project source 
+    - Change VERSION in package makefile
+    - View history from last release in SVN (or view the changelog)
+    - Update KeePassSync-history.txt from the changelog
+    - Create release notes
+    - Run package makefile
+    - Create news item with subject "KeePassSync x.y.z released" and text from release notes
+    - Check in the source
+    - Make a tag for the SVN source
+    - Upload binaries/source
+    - Create a new release
+
+
+How to tag:
+    - tag Subversion with tag "version_X_Y" (svn copy -m "tag version X.Y" https://dejavu.svn.sourceforge.net/svnroot/dejavu/trunk https://dejavu.svn.sourceforge.net/svnroot/dejavu/tags/version_X_Y with X and Y properly replaced)
+
+
+How to upload the package:
+    - https://frs.sourceforge.net/webupload
+
+
+
+
+
+sftp shawnkc@frs.sourceforge.net
+cd Uploads
+
+scp KeePassSync-2.05.1-src.zip 
+nant.sourceforge.net:/home/groups/n/na/nant/htdocs
+
+
+
+from something else:
+
+How to make a Sourceforge release
+    *  update News
+    * update README and NEWS with new information (version, changelog)
+    * check if Authors is in sync with News
+    * check if AUTHORS is in sync with Authors
+    * change VERSION string in Makefile
+    * make full-ttf, make pre-patch and commit the changes to bump version strings in the sfd files
+    * make condensed, make pre-patch and commit the changes to update the condensed faces
+    * make clean, make all to generate all ttf files, and new status files
+    * copy new status files (from build/) to main directory and commit changes
+    * tag Subversion with tag "version_X_Y" (svn copy -m "tag version X.Y" https://dejavu.svn.sourceforge.net/svnroot/dejavu/trunk https://dejavu.svn.sourceforge.net/svnroot/dejavu/tags/version_X_Y with X and Y properly replaced)
+    * make dist to generate packages
+    * upload packages to sftp://frs.sourceforge.net/uploads 
+
+    * create new release for package dejavu with name X.Y
+          o changelog is from NEWS
+          o notes are human-readable changelog 
+    * create news item with subject "DejaVu fonts X.Y released" and text from release notes
+    * compute MD5 and SHA256 sums for released files
+    * update Main Page, Download, Old Downloads, Roadmap, Release candidates and Current status
+    * recreate PDF samples: tar xjf dejavu-fonts-ttf-${old_version}.tar.bz2; tar xjf dejavu-fonts-ttf-${new_version}.tar.bz2; ./samples.sh dejavu-fonts-ttf-${new_version}/ttf dejavu-fonts-ttf-${old_version}/ttf
+    * upload PDF samples to sftp://shell.sourceforge.net/home/groups/d/de/dejavu/htdocs/samples
+    * update latest update date on PDF samples
+    * send announce to dejavu-fonts mailing list
+    * send announce to fonts AT gnome.org
+    * update project info on freshmeat.net 
+
+

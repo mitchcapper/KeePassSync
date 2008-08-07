@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeePassSync", "KeePassSync\KeePassSync.csproj", "{B9CECCA9-6C93-4278-AB8E-C15628DB852C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeePassSync_FTP", "KeePassSync_FTP\KeePassSync_FTP.csproj", "{0C79B1D6-4494-412E-8F79-92CB72957829}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeePassSync_digitalbucket.net", "KeePassSync_digitalbucket.net\KeePassSync_digitalbucket.net.csproj", "{59FACF54-D81F-4957-BBCA-3C7B6B074B9C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B9CECCA9-6C93-4278-AB8E-C15628DB852C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9CECCA9-6C93-4278-AB8E-C15628DB852C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9CECCA9-6C93-4278-AB8E-C15628DB852C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9CECCA9-6C93-4278-AB8E-C15628DB852C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C79B1D6-4494-412E-8F79-92CB72957829}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C79B1D6-4494-412E-8F79-92CB72957829}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C79B1D6-4494-412E-8F79-92CB72957829}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C79B1D6-4494-412E-8F79-92CB72957829}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59FACF54-D81F-4957-BBCA-3C7B6B074B9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59FACF54-D81F-4957-BBCA-3C7B6B074B9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59FACF54-D81F-4957-BBCA-3C7B6B074B9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59FACF54-D81F-4957-BBCA-3C7B6B074B9C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
