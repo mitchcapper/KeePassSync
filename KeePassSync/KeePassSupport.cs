@@ -38,7 +38,8 @@ namespace KeePassSync
             PwEntry entry = null;
             if ( host != null && host.Database != null )
             {
-                entry = new PwEntry( host.Database.RootGroup, true, true );
+                entry = new PwEntry( true, true );
+                host.Database.RootGroup.AddEntry( entry, false );
 
                 if ( entry != null )
                 {
@@ -77,7 +78,8 @@ namespace KeePassSync
             PwEntry entry = null;
             if (host != null && host.Database != null)
             {
-                entry = new PwEntry(host.Database.RootGroup, true, true);
+                entry = new PwEntry( true, true );
+                host.Database.RootGroup.AddEntry( entry, false );
 
                 if (entry != null)
                 {

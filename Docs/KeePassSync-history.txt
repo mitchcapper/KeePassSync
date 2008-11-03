@@ -1,4 +1,4 @@
-2008-07-30: v2.05.2
+2008-08-06: v2.05.2
 - On open of DB, temp entry no longer hangs around
 - On first creation of syncEntry in database, sync doesn't fail because mergeIn() can't find file
 - On save, we sync, not just export.

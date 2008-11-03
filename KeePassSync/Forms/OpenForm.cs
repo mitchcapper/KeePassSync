@@ -96,7 +96,7 @@ namespace KeePassSync.Forms
             {
                 if ( m_Entry == null )
                 {
-                    m_Entry = new PwEntry( null, true, true );
+                    m_Entry = new PwEntry( true, true );
                     if ( m_Entry == null )
                     {
                         m_MainInterface.SetStatus( StatusPriority.eMessageBoxInfo, "Couldn't create KeePass entry." );
