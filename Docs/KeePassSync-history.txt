@@ -1,3 +1,9 @@
+2009-03-14: v2.07
+- Compatible with KeePass v2.07 Beta
+
+2008-11-02: v2.06
+- Compatible with KeePass v2.06 Beta
+
 2008-08-06: v2.05.2
 - On open of DB, temp entry no longer hangs around
 - On first creation of syncEntry in database, sync doesn't fail because mergeIn() can't find file

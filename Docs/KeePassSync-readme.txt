@@ -9,14 +9,14 @@ plink -pw (PASSWORD) (USERNAME)@(HOST) "ls"
 
 What is KeePassSync?
 --------------------
-KeePassSync is a KeePass plugin that synchronizes your database using various online storage providers. This allows two or more computers to easily keep their data in sync.  Each version of KeePassSync requires the corresponding version of KeePass.  For example, if you download KeePassSync 2.05, it requires at least KeePass 2.05.
+KeePassSync is a KeePass plugin that synchronizes your database using various online storage providers. This allows two or more computers to easily keep their data in sync.  Each version of KeePassSync requires the corresponding version of KeePass.  For example, if you download KeePassSync 2.05, it requires KeePass 2.05.
 
 This plugin will NOT work with KeePass v1.x.
 
 
 Requirements:
 -------------
-- KeePass 2.05 Alpha
+- KeePass 2.07 Beta
 
 
 How to install:

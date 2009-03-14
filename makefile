@@ -1,4 +1,4 @@
-VERSION = 2.06
+VERSION = 2.07
 BINS=KeePassSync/bin/Release/KeePassSync.dll KeePassSync_digitalbucket.net/bin/Release/KeePassSync_digitalBucket.net.dll KeePassSync_FTP/bin/Release/KeePassSync_FTP.dll Support/plink.exe Support/pscp.exe
 BINARY_PACKAGE=KeePassSync-$(VERSION).zip
 SRC_PACKAGE=KeePassSync-$(VERSION)-src.zip
