@@ -1,3 +1,11 @@
+2009-02-20: v2.09
+- Compatible with KeePass v2.09
+- Fixes to Double Creation Entries and Editing Problems
+- Fixes to Setup
+- Amazon S3 Provider Added
+- Background Sync Support
+
+
 2009-03-14: v2.07
 - Compatible with KeePass v2.07 Beta
 

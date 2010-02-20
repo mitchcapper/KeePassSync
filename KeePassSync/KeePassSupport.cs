@@ -56,7 +56,7 @@ namespace KeePassSync
                     }
 
                     PwEntryForm form = new PwEntryForm();
-                    form.InitEx( entry, PwEditMode.EditExistingEntry, host.Database, host.MainWindow.ClientIcons, false );
+                    form.InitEx( entry, PwEditMode.EditExistingEntry, host.Database, host.MainWindow.ClientIcons, false, false );
                     DialogResult res = form.ShowDialog();
 
                     if ( res == DialogResult.OK )
@@ -79,8 +79,6 @@ namespace KeePassSync
             if (host != null && host.Database != null)
             {
                 entry = new PwEntry( true, true );
-                host.Database.RootGroup.AddEntry( entry, false );
-
                 if (entry != null)
                 {
                     PwGroup destGroup = host.Database.RootGroup;
@@ -92,7 +90,7 @@ namespace KeePassSync
 
                     if (destGroup != null)
                     {
-                        destGroup.Entries.Add(entry);
+                        destGroup.AddEntry(entry,true,true);
                         host.MainWindow.UpdateUI( false, null, true, null, true, null, true );
                     }
                 }
@@ -126,7 +124,7 @@ namespace KeePassSync
             if (entry != null)
             {
                 PwEntryForm form = new PwEntryForm();
-                form.InitEx(entry, PwEditMode.EditExistingEntry, host.Database, host.MainWindow.ClientIcons, false);
+                form.InitEx(entry, PwEditMode.EditExistingEntry, host.Database, host.MainWindow.ClientIcons, false, false);
                 DialogResult res = form.ShowDialog();
 
                 if (res == DialogResult.OK)
@@ -206,7 +204,7 @@ namespace KeePassSync
                     PwGroup destGroup = host.Database.RootGroup;
                     // Finally tell the parent group that it owns this entry now
                     destGroup.Entries.Add(newEntry);
-                    host.MainWindow.UpdateUI(false, null, true, null, true, null, true);
+					host.MainWindow.UpdateUI(false, null, true, null, true, null, true);
                     ret = true;
                 }
             }

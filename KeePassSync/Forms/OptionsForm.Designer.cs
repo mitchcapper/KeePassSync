@@ -370,7 +370,6 @@ namespace KeePassSync.Forms
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "KeePassSync Options";
             this.Load += new System.EventHandler( this.OnFormLoad );
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler( this.OptionsForm_KeyDown );
             this.m_grpMergeOptions.ResumeLayout( false );
             this.m_grpMergeOptions.PerformLayout();
             ( (System.ComponentModel.ISupportInitialize)( this.m_BannerImage ) ).EndInit();

@@ -74,11 +74,11 @@ namespace KeePassSync_FTP
 
                 // just issue command to see if timeout occurs
                 string commandStr = "-pw " +
-                    entry.Strings.Get( PwDefs.PasswordField ).ReadString() +
+                    entry.Strings.GetSafe( PwDefs.PasswordField ).ReadString() +
                     " " +
-                    entry.Strings.Get( PwDefs.UserNameField ).ReadString() +
+                    entry.Strings.GetSafe( PwDefs.UserNameField ).ReadString() +
                     "@" +
-                    entry.Strings.Get( PwDefs.UrlField ).ReadString() +
+                    entry.Strings.GetSafe( PwDefs.UrlField ).ReadString() +
                     " ls";
                 process.StartInfo.FileName = KeePassSyncExt.PluginDirectory + "\\plink.exe";
                 process.StartInfo.Arguments = commandStr;
@@ -123,7 +123,7 @@ namespace KeePassSync_FTP
             KeePassSyncErr ret = KeePassSyncErr.Error;
             System.Diagnostics.Process process = new Process();
 
-            string directory = entry.Strings.Get( "DirectoryField" ).ReadString();
+            string directory = entry.Strings.GetSafe( "DirectoryField" ).ReadString();
             if ( directory != "" && !directory.EndsWith("/") )
                 directory += "/";
 
@@ -132,11 +132,11 @@ namespace KeePassSync_FTP
             // Backup the existing file
             string backupName = remoteDatabaseName + ".bak";
             commandStr = "-pw " +
-                entry.Strings.Get( PwDefs.PasswordField ).ReadString() +
+                entry.Strings.GetSafe( PwDefs.PasswordField ).ReadString() +
                 " " +
-                entry.Strings.Get( PwDefs.UserNameField ).ReadString() +
+                entry.Strings.GetSafe( PwDefs.UserNameField ).ReadString() +
                 "@" +
-                entry.Strings.Get( PwDefs.UrlField ).ReadString() +
+                entry.Strings.GetSafe( PwDefs.UrlField ).ReadString() +
                 " \"mv " +
                 directory + remoteDatabaseName +
                 " " + directory + backupName +
@@ -154,13 +154,13 @@ namespace KeePassSync_FTP
             if ( exitedOnTime )
             {
                 commandStr = "-pw "
-                    + entry.Strings.Get( PwDefs.PasswordField ).ReadString()
+                    + entry.Strings.GetSafe( PwDefs.PasswordField ).ReadString()
                     + " "
                     + "\"" + filename + "\""
                     + " "
-                    + entry.Strings.Get( PwDefs.UserNameField ).ReadString()
+                    + entry.Strings.GetSafe( PwDefs.UserNameField ).ReadString()
                     + "@"
-                    + entry.Strings.Get( PwDefs.UrlField ).ReadString()
+                    + entry.Strings.GetSafe( PwDefs.UrlField ).ReadString()
                     + ":"
                     + directory
                     + remoteDatabaseName;
@@ -197,7 +197,7 @@ namespace KeePassSync_FTP
                 ret = RemoteDatabaseListing( entry, KeepassDirFilename );
                 if ( ret == KeePassSyncErr.None )
                 {
-                    string directory = entry.Strings.Get( "DirectoryField" ).ReadString();
+                    string directory = entry.Strings.GetSafe( "DirectoryField" ).ReadString();
                     if ( directory != "" && !directory.EndsWith( "/" ) )
                         directory += "/";
 
@@ -247,7 +247,7 @@ namespace KeePassSync_FTP
                     if ( File.Exists( filename ) )
                         File.Delete( filename );
 
-                    string directory = entry.Strings.Get( "DirectoryField" ).ReadString();
+                    string directory = entry.Strings.GetSafe( "DirectoryField" ).ReadString();
                     if ( directory != "" && !directory.EndsWith( "/" ) )
                         directory += "/";
 
@@ -286,11 +286,11 @@ namespace KeePassSync_FTP
             System.Diagnostics.Process process = new Process();
 
             string commandStr = "-pw "
-                + entry.Strings.Get( PwDefs.PasswordField ).ReadString()
+                + entry.Strings.GetSafe( PwDefs.PasswordField ).ReadString()
                 + " "
-                + entry.Strings.Get( PwDefs.UserNameField ).ReadString()
+                + entry.Strings.GetSafe( PwDefs.UserNameField ).ReadString()
                 + "@"
-                + entry.Strings.Get( PwDefs.UrlField ).ReadString()
+                + entry.Strings.GetSafe( PwDefs.UrlField ).ReadString()
                 + ":"
                 + remoteDirectory
                 + remoteDatabaseName
@@ -341,16 +341,16 @@ namespace KeePassSync_FTP
                     File.Delete( localListingFileFullPath );
 
                 // Generate directory listing
-                string remoteDirectory = entry.Strings.Get( "DirectoryField" ).ReadString();
+                string remoteDirectory = entry.Strings.GetSafe( "DirectoryField" ).ReadString();
                 if ( remoteDirectory != "" && !remoteDirectory.EndsWith( "/" ) )
                     remoteDirectory += "/";
 
                 string commandStr = "-pw " +
-                    entry.Strings.Get( PwDefs.PasswordField ).ReadString() +
+                    entry.Strings.GetSafe( PwDefs.PasswordField ).ReadString() +
                     " " +
-                    entry.Strings.Get( PwDefs.UserNameField ).ReadString() +
+                    entry.Strings.GetSafe( PwDefs.UserNameField ).ReadString() +
                     "@" +
-                    entry.Strings.Get( PwDefs.UrlField ).ReadString() +
+                    entry.Strings.GetSafe( PwDefs.UrlField ).ReadString() +
                     " \"ls -1 " +
                     remoteDirectory +
                     ONLINE_DB_PREFIX +
@@ -369,11 +369,11 @@ namespace KeePassSync_FTP
                 {
                     // Download the directory listing
                     commandStr = "-pw " +
-                        entry.Strings.Get( PwDefs.PasswordField ).ReadString() +
+                        entry.Strings.GetSafe( PwDefs.PasswordField ).ReadString() +
                         " " +
-                        entry.Strings.Get( PwDefs.UserNameField ).ReadString() +
+                        entry.Strings.GetSafe( PwDefs.UserNameField ).ReadString() +
                         "@" +
-                        entry.Strings.Get( PwDefs.UrlField ).ReadString() +
+                        entry.Strings.GetSafe( PwDefs.UrlField ).ReadString() +
                         ":" + remoteDirectory + "KeePassSyncDir.txt \"" + localListingFileFullPath + "\"";
                     process.StartInfo.FileName = KeePassSyncExt.PluginDirectory + "\\pscp.exe";
                     process.StartInfo.Arguments = commandStr;
@@ -416,7 +416,7 @@ namespace KeePassSync_FTP
             if ( err == KeePassSyncErr.None )
             {
                 // Generate directory listing
-                string remoteDirectory = entry.Strings.Get( "DirectoryField" ).ReadString();
+                string remoteDirectory = entry.Strings.GetSafe( "DirectoryField" ).ReadString();
                 if ( remoteDirectory != "" && !remoteDirectory.EndsWith( "/" ) )
                     remoteDirectory += "/";
 
@@ -461,13 +461,13 @@ namespace KeePassSync_FTP
             Debug.Assert( entry != null, "Invalid entry" );
 
             if ( entry.Strings.Get( PwDefs.UserNameField ) != null )
-                m_UserControl.Username = entry.Strings.Get( PwDefs.UserNameField ).ReadString();
+                m_UserControl.Username = entry.Strings.GetSafe( PwDefs.UserNameField ).ReadString();
             if ( entry.Strings.Get( PwDefs.PasswordField ) != null )
-                m_UserControl.Password = entry.Strings.Get( PwDefs.PasswordField ).ReadString();
+                m_UserControl.Password = entry.Strings.GetSafe( PwDefs.PasswordField ).ReadString();
             if ( entry.Strings.Get( PwDefs.UrlField ) != null )
-                m_UserControl.Host = entry.Strings.Get( PwDefs.UrlField ).ReadString();
+                m_UserControl.Host = entry.Strings.GetSafe( PwDefs.UrlField ).ReadString();
             if ( entry.Strings.Get( "DirectoryField" ) != null )
-                m_UserControl.Directory = entry.Strings.Get( "DirectoryField" ).ReadString();
+                m_UserControl.Directory = entry.Strings.GetSafe( "DirectoryField" ).ReadString();
         }
 
         public override void EncodeEntry( PwEntry entry )

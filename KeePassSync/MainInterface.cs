@@ -28,6 +28,7 @@ using KeePass.Forms;
 using KeePass.Resources;
 using KeePassLib;
 using KeePassLib.Security;
+using System.Threading;
 
 using KeePassSync.Forms;
 using System.Reflection;
@@ -94,8 +95,7 @@ namespace KeePassSync
         public object Clone()
         {
             OptionsData options = (OptionsData)this.MemberwiseClone();
-            if ( this.PasswordEntry != null )
-                options.PasswordEntry = this.PasswordEntry.CloneDeep();
+
             return options;
         }
         #endregion
@@ -281,11 +281,26 @@ namespace KeePassSync
 
             OptionsChanged += OnOptionsChanged;
             ValidDatabaseChanged += OnValidDatabaseChanged;
+			m_Host.MainWindow.FileClosed += new EventHandler<FileClosedEventArgs>(MainWindow_FileClosed);
 
             //OptionsChanged(this, new OptionsChangedEventArgs(m_OptionsProvider));
 
             return true;
         }
+		private bool main_window_is_closing = false;
+		void MainWindow_FileClosed(object sender, FileClosedEventArgs e)
+		{
+			main_window_is_closing = true;
+			if (sync_thread != null)
+				if (sync_thread.IsAlive)
+				{
+					sync_thread.Join(5000);
+					if (sync_thread.IsAlive)
+						sync_thread.IsBackground = true; //will be terminated on close now.
+
+				}
+
+		}
 
         public IOnlineProvider GetOnlineProvider( string key )
         {
@@ -397,13 +412,18 @@ namespace KeePassSync
 
             m_tsmiSync.Enabled = m_ValidOnlineOptions && m_ValidDatabase;
         }
-
+        void find_online_provider()
+        {
+            if (OnlineProvider != null)
+                m_OptionsData.PasswordEntry = KeePassSupport.FindEntry(Host, OnlineProvider);
+            else
+                m_OptionsData.PasswordEntry = null;
+        }
         void OnValidDatabaseChanged( object sender, EventArgs e )
         {
             if ( m_Host.MainWindow.ActiveDatabase != null && m_OptionsProvider != null )
             {
-                if ( OnlineProvider != null )
-                    m_OptionsData.PasswordEntry = KeePassSupport.FindEntry( Host, OnlineProvider );
+                find_online_provider();
 
                 OptionsChanged( this, new EventArgs() );
             }
@@ -430,7 +450,7 @@ namespace KeePassSync
                     MessageBox.Show( msg, Properties.Resources.Str_Title, MessageBoxButtons.OK );
                     break;
                 case StatusPriority.eStatusBar:
-                    m_Host.MainWindow.SetStatusEx( msg );
+					thread_MainWindow_SetStatusEx(msg);
                     break;
             }
         }
@@ -474,11 +494,6 @@ namespace KeePassSync
                 if ( m_ValidOnlineOptions )
                 {
                     // This could be replaced with a handler for ActiveDatabase.Changed event
-                    bool added = KeePassSupport.CheckEntry( m_Host, m_OptionsData.PasswordEntry );
-                    if ( added )
-                    {
-                        ValidDatabaseChanged( this, new EventArgs() );
-                    }
 
                     string dbName = Path.GetTempFileName();
                     ret = OnlineProvider.GetFile( m_OptionsData.PasswordEntry, GetDatabaseName( m_Host.Database ), dbName );
@@ -500,11 +515,10 @@ namespace KeePassSync
 
                             m_Host.Database.MergeIn( db, PwMergeMethod.Synchronize );
                             db.Close();
-
+							
                             // TODO - delete more securely
                             File.Delete( serialinfo.Path );
-
-                            m_Host.MainWindow.UpdateUI( false, null, true, m_Host.Database.RootGroup, true, null, true );
+							thread_MainWindow_UpdateUI(false, null, true, true, true, null, db.Modified);
                         }
                         catch ( Exception e )
                         {
@@ -515,7 +529,6 @@ namespace KeePassSync
                     else
                     {
                         SetStatus( StatusPriority.eStatusBar, "Database not online, stored current database." );
-                        ret = KeePassSyncErr.FileNotFound;
                     }
                 }
                 else
@@ -532,28 +545,109 @@ namespace KeePassSync
 
             return ret;
         }
+		private delegate void MainWindow_StringArg(String arg);
+		private delegate PwGroup MainWindow_VoidArg();
+		private MainWindow_StringArg MainWindow_SetStatusEx_del;
+		private MainWindow_VoidArg MainWindow_GetSelectedGroup_del;
+		public delegate void MainWindow_UpdateUI(bool bRecreateTabBar, KeePass.UI.PwDocument dsSelect, bool bUpdateGroupList, PwGroup pgSelect, bool bUpdateEntryList, PwGroup pgEntrySource, bool bSetModified);
+		private MainWindow_UpdateUI MainWindow_UpdateUI_del=null;
+		private void thread_MainWindow_SetStatusEx(String arg)
+		{
+			if (main_window_is_closing)
+				return;
+			if (sync_thread != Thread.CurrentThread) //we are in the original thread
+			{
+				m_Host.MainWindow.SetStatusEx(arg);
+				return;
+			}
 
-        private void Sync()
+			if (MainWindow_SetStatusEx_del == null)
+				MainWindow_SetStatusEx_del = new MainWindow_StringArg(m_Host.MainWindow.SetStatusEx);
+			if (main_window_is_closing)
+				return;
+			m_Host.MainWindow.Invoke(MainWindow_SetStatusEx_del, new object[] { arg });			
+		}
+		private void thread_MainWindow_UpdateUI(bool bRecreateTabBar, KeePass.UI.PwDocument dsSelect, bool bUpdateGroupList, bool CurGroupNotRootGroup, bool bUpdateEntryList, PwGroup pgEntrySource, bool bSetModified){
+			if (main_window_is_closing)
+				return;
+			if (MainWindow_GetSelectedGroup_del == null)
+				MainWindow_GetSelectedGroup_del = new MainWindow_VoidArg(m_Host.MainWindow.GetSelectedGroup);
+
+			if (MainWindow_UpdateUI_del == null)
+				MainWindow_UpdateUI_del = new MainWindow_UpdateUI(m_Host.MainWindow.UpdateUI);
+			PwGroup pgSelect;
+			if (CurGroupNotRootGroup)
+				pgSelect = (PwGroup)m_Host.MainWindow.Invoke(MainWindow_GetSelectedGroup_del);
+			else
+				pgSelect = m_Host.Database.RootGroup;
+			if (main_window_is_closing)
+				return;
+			m_Host.MainWindow.Invoke(MainWindow_UpdateUI_del, new object[] { bRecreateTabBar, dsSelect, bUpdateGroupList, pgSelect, bUpdateEntryList, pgEntrySource, bSetModified });
+
+		}
+
+		private Thread sync_thread = null;
+		private void thread_sync()
+		{
+			try
+			{
+                find_online_provider();
+				if (!m_Host.Database.IsOpen || OnlineProvider == null)
+					return;
+				String provider_name = OnlineProvider.Name;
+				if (provider_name == null)
+					provider_name = "Syncer";
+
+				SetStatus(StatusPriority.eStatusBar, Properties.Resources.Str_Syncing.Replace("%1", provider_name));
+				// This should read online database, merge and save it back out
+				KeePassSyncErr status = MergeIn();
+				if (status == KeePassSyncErr.None || status == KeePassSyncErr.FileNotFound)
+				{
+					status = MergeOut();
+					if (status != KeePassSyncErr.None)
+						SetStatus(StatusPriority.eStatusBar, Properties.Resources.Str_ErrSync);
+					else
+						SetStatus(StatusPriority.eStatusBar, Properties.Resources.Str_Synced.Replace("%1", provider_name));
+				}
+			}
+			catch (Exception e)
+			{
+				MessageBox.Show(e.Message + "\r\n" + e.StackTrace);
+				Debugger.Launch();
+			}			
+		}
+        private void Sync(bool in_background)
         {
-            SetStatus( StatusPriority.eStatusBar, Properties.Resources.Str_Syncing.Replace( "%1", OnlineProvider.Name ) );
-
-            // This should read online database, merge and save it back out
-            KeePassSyncErr status = MergeIn();
-            if ( status == KeePassSyncErr.None || status == KeePassSyncErr.FileNotFound )
-            {
-                status = MergeOut();
-                if ( status != KeePassSyncErr.None )
-                {
-                    SetStatus( StatusPriority.eStatusBar, Properties.Resources.Str_ErrSync );
-                }
-            }
+			if (sync_thread != null)
+			{
+				if (sync_thread.IsAlive)
+				{
+					MessageBox.Show("Already syncing refusing to sync again...");
+					return;
+				}
+				sync_thread.Join();
+				sync_thread = null;
+			}
+			if (m_ValidOnlineOptions)
+			{
+				bool added = KeePassSupport.CheckEntry(m_Host, m_OptionsData.PasswordEntry);
+				if (added)
+					ValidDatabaseChanged(this, new EventArgs());
+			}
+			if (in_background)
+			{
+				sync_thread = new Thread(this.thread_sync);
+				sync_thread.Start();
+				return;
+			}
+			thread_sync();
         }
 
         private void OnMenuSync( object sender, EventArgs e )
         {
             // Set the status bar to the KeePass default
             SetStatus( StatusPriority.eStatusBar, "" );
-            Sync();
+            Sync(false);
         }
 
         /// <summary>
@@ -708,7 +802,7 @@ namespace KeePassSync
                         else
                         {
                             m_Host.Database.Open( serialinfo, key, logger );
-                            m_Host.MainWindow.UpdateUI( false, null, true, m_Host.Database.RootGroup, true, null, false );
+							m_Host.MainWindow.UpdateUI(false, null, true, m_Host.MainWindow.GetSelectedGroup(), true, null, false);
 
                             success = true;
 
@@ -838,7 +932,7 @@ namespace KeePassSync
 
         private void OnFileSaved( object sender, FileSavedEventArgs e )
         {
-            Sync();
+            Sync(true);
         }
 
         private KeePassSyncErr MergeOut()

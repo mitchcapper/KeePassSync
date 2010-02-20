@@ -1,5 +1,5 @@
-VERSION = 2.07
-BINS=KeePassSync/bin/Release/KeePassSync.dll KeePassSync_digitalbucket.net/bin/Release/KeePassSync_digitalBucket.net.dll KeePassSync_FTP/bin/Release/KeePassSync_FTP.dll Support/plink.exe Support/pscp.exe
+VERSION = 2.09
+BINS=KeePassSync/bin/Release/KeePassSync.dll KeePassSync_digitalbucket.net/bin/Release/KeePassSync_digitalBucket.net.dll KeePassSync_FTP/bin/Release/KeePassSync_FTP.dll  KeePassSync_S3/bin/Release/KeePassSync_S3.dll Support/plink.exe Support/pscp.exe
 BINARY_PACKAGE=KeePassSync-$(VERSION).zip
 SRC_PACKAGE=KeePassSync-$(VERSION)-src.zip
 
@@ -20,6 +20,9 @@ package-src:
 
 	zip -r $(SRC_PACKAGE) KeePassSync_FTP/*
 	zip -d -r $(SRC_PACKAGE) KeePassSync_FTP/bin KeePassSync_FTP/obj
+
+	zip -r $(SRC_PACKAGE) KeePassSync_S3/*
+	zip -d -r $(SRC_PACKAGE) KeePassSync_S3/bin KeePassSync_S3/obj
 
 	zip -r $(SRC_PACKAGE) docs
 	zip -d -r $(SRC_PACKAGE) docs/Internal*

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -112,85 +112,9 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Img_16x16_Open" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Img_16x16_Open.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Img_16x16_Options" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Img_16x16_Options.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Img_16x16_Plugin" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Img_16x16_Plugin.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Img_16x16_Sync" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Img_16x16_Sync.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Img_48x48_Open" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Img_48x48_Open.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Img_48x48_Password" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Img_48x48_Password.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Img_48x48_Sync" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Img_48x48_Sync.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Str_EditCreateQuestion" xml:space="preserve">
-    <value>Would you like to create/edit your %1 online settings?</value>
-  </data>
-  <data name="Str_EntryNotes" xml:space="preserve">
-    <value>Don't rename this entry or your online password information will be lost.</value>
-  </data>
-  <data name="Str_ErrExceptionOptions" xml:space="preserve">
-    <value>There has been an unhandled exception in the options provider.</value>
-  </data>
-  <data name="Str_ErrNoProviderSelected" xml:space="preserve">
-    <value>There is no provider selected in the options.</value>
-  </data>
-  <data name="Str_ErrOpenDatabase" xml:space="preserve">
-    <value>Unable to open database.</value>
-  </data>
-  <data name="Str_ErrOptions" xml:space="preserve">
-    <value>Can't retrieve KeePassSync options.</value>
-  </data>
-  <data name="Str_ErrProviderInitialization" xml:space="preserve">
-    <value>Couldn't initialize the %1 provider.</value>
-  </data>
-  <data name="Str_ErrRetrieveDatabase" xml:space="preserve">
-    <value>Possible connection issue.  Unable to retrieve databases.  Test your connection and try again.</value>
-  </data>
-  <data name="Str_ErrSync" xml:space="preserve">
-    <value>Unable to sync the database.</value>
-  </data>
-  <data name="Str_ErrValidatingOptions_Error" xml:space="preserve">
-    <value>Error during options validation.</value>
-  </data>
-  <data name="Str_ErrValidatingOptions_NotConnected" xml:space="preserve">
-    <value>Error during options validation, not connected.</value>
-  </data>
-  <data name="Str_ErrValidatingOptions_Timeout" xml:space="preserve">
-    <value>Timeout occured during options validation.</value>
-  </data>
-  <data name="Str_OptionsChanged" xml:space="preserve">
-    <value>This database doesn't have valid online credentials necessary for synchronization.</value>
-  </data>
-  <data name="Str_PasswordEntryTemplate" xml:space="preserve">
-    <value>KeePassSync (%1)</value>
-  </data>
-  <data name="Str_Synced" xml:space="preserve">
-    <value>Synchronized database (%1)</value>
-  </data>
-  <data name="Str_Syncing" xml:space="preserve">
-    <value>Synchronizing database (%1)...</value>
-  </data>
-  <data name="Str_Title" xml:space="preserve">
-    <value>KeePassSync</value>
-  </data>
-  <data name="Str_TryAgain" xml:space="preserve">
-    <value>Would you like to try again?</value>
-  </data>
 </root>

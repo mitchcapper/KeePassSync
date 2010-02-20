@@ -16,7 +16,7 @@ This plugin will NOT work with KeePass v1.x.
 
 Requirements:
 -------------
-- KeePass 2.07 Beta
+- KeePass 2.09
 
 
 How to install:

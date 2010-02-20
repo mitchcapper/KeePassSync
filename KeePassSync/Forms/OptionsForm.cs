@@ -166,13 +166,16 @@ namespace KeePassSync.Forms
 
             if ( m_EditedEntry != null )
             {
-                if ( m_OptionData.PasswordEntry != null )
+                if (m_OptionData.PasswordEntry != null)
                 {
-                    m_OptionData.PasswordEntry.AssignProperties( m_EditedEntry, true, true );
+                    m_OptionData.PasswordEntry.AssignProperties( m_EditedEntry, false, true, false );
+					m_OptionData.PasswordEntry.Touch(true);
                 }
                 else
                 {
-                    m_OptionData.PasswordEntry = m_EditedEntry.CloneDeep();
+                    m_OptionData.PasswordEntry = m_EditedEntry;
+                    m_EditedEntry = m_OptionData.PasswordEntry.CloneDeep();
+					m_OptionData.PasswordEntry.Touch(true);
                 }
             }
         }
@@ -256,7 +259,10 @@ namespace KeePassSync.Forms
         {
             bool ret = false;
             PwEntry entry = null;
-
+            if (OnlineProvider != null)
+                m_OptionData.PasswordEntry = KeePassSupport.FindEntry(m_MainInterface.Host, OnlineProvider);
+            else
+                m_OptionData.PasswordEntry = null;
             if ( provider != null )
             {
                 entry = KeePassSupport.FindEntry( m_MainInterface.Host, provider );
@@ -298,14 +304,6 @@ namespace KeePassSync.Forms
 
         }
 
-        private void OptionsForm_KeyDown( object sender, KeyEventArgs e )
-        {
-            if ( e.KeyCode == Keys.F5 )
-            {
-                CopyData();
-                ResetForm();
-            }
-        }
 
         private void m_btnStoreCreate_Click( object sender, EventArgs e )
         {
@@ -330,19 +328,19 @@ namespace KeePassSync.Forms
             else
             {
                 m_EditedEntry = KeePassSupport.CreateEntry( m_MainInterface.Host, Properties.Resources.Str_PasswordEntryTemplate.Replace( "%1", m_MainInterface.GetOnlineProvider( m_OptionData.OnlineProviderKey ).Name ) );
-                bool created = false;
+                m_CreatedEntry = false;
                 m_EntryChanged = true;
 
                 if ( checkBox1.Checked )
                 {
-                    created = KeePassSupport.EditEntry( m_MainInterface.Host, m_EditedEntry );
+                    m_CreatedEntry = KeePassSupport.EditEntry(m_MainInterface.Host, m_EditedEntry);
                 }
                 else
                 {
-                    created = m_MainInterface.GetOnlineProvider( m_OptionData.OnlineProviderKey ).EditEntry( m_EditedEntry );
+                    m_CreatedEntry = m_MainInterface.GetOnlineProvider(m_OptionData.OnlineProviderKey).EditEntry(m_EditedEntry);
                 }
 
-                if ( !created )
+                if (!m_CreatedEntry)
                 {
                     KeePassSupport.DeleteEntry( m_MainInterface.Host, m_EditedEntry );
                     m_EditedEntry = null;
