@@ -49,6 +49,9 @@ namespace KeePassSync_digitalbucket
         private const string ONLINE_DB_PREFIX = "Keepass-";
         private AccountDetails m_UserControl = null;
         private string[] m_AcceptedNames = { "digitalbucket.net", "Digital Bucket" };
+		private static string PasswordField = PwDefs.PasswordField;
+		private bool memprotect_password = true;
+
         #endregion
 
         public override KeePassSyncErr Initialize( KeePassSyncExt mainInterface )
@@ -124,7 +127,7 @@ namespace KeePassSync_digitalbucket
         public override KeePassSyncErr GetFile( PwEntry entry, string databaseName, string filename )
         {
             digitalbucket.net.rest.File onlineFile = null;
-            KeePassSyncErr ret = KeePassSyncErr.Error; // default to error
+            KeePassSyncErr ret = KeePassSyncErr.FileNotFound; // default to error
 
             // Make the database name conform to our internal naming convention
             string realDbName = ONLINE_DB_PREFIX + databaseName;
@@ -232,10 +235,10 @@ namespace KeePassSync_digitalbucket
                 m_Service = null;
                 if ( m_OptionData != null )
                 {
-                    if ( m_OptionData.PasswordEntry != null && m_OptionData.PasswordEntry.Strings.Exists( PwDefs.UserNameField ) && m_OptionData.PasswordEntry.Strings.Exists( PwDefs.PasswordField ) )
+					if (m_OptionData.PasswordEntry != null && m_OptionData.PasswordEntry.Strings.Exists(PwDefs.UserNameField) && m_OptionData.PasswordEntry.Strings.Exists(PasswordField))
                     {
                         ProtectedString user = m_OptionData.PasswordEntry.Strings.Get( PwDefs.UserNameField );
-                        ProtectedString pw = m_OptionData.PasswordEntry.Strings.Get( PwDefs.PasswordField );
+						ProtectedString pw = m_OptionData.PasswordEntry.Strings.Get(PasswordField);
 
                         m_MainInterface.SetStatus( StatusPriority.eStatusBar, "Initializing " + Name + " service..." );
                         m_Service = new digitalbucket.net.rest.DigitalBucketConnection( user.ReadString(), pw.ReadString(), m_ServiceAddress );
@@ -274,7 +277,7 @@ namespace KeePassSync_digitalbucket
 
             m_Service = new digitalbucket.net.rest.DigitalBucketConnection(
                 entry.Strings.Get( PwDefs.UserNameField ).ReadString(),
-                entry.Strings.Get( PwDefs.PasswordField ).ReadString(),
+				entry.Strings.Get(PasswordField).ReadString(),
                 m_ServiceAddress );
 
             databases = Databases;
@@ -296,8 +299,8 @@ namespace KeePassSync_digitalbucket
             if ( entry.Strings.Get( PwDefs.UserNameField ) != null )
                 m_UserControl.Username = entry.Strings.Get( PwDefs.UserNameField ).ReadString();
 
-            if ( entry.Strings.Get( PwDefs.PasswordField ) != null )
-                m_UserControl.Password = entry.Strings.Get( PwDefs.PasswordField ).ReadString();
+			if (entry.Strings.Get(PasswordField) != null)
+				m_UserControl.Password = entry.Strings.Get(PasswordField).ReadString();
         }
 
         public override void EncodeEntry( PwEntry entry )
@@ -305,7 +308,7 @@ namespace KeePassSync_digitalbucket
             Debug.Assert( entry != null, "Invalid entry" );
 
             entry.Strings.Set( PwDefs.UserNameField, new ProtectedString( false, m_UserControl.Username ) );
-            entry.Strings.Set( PwDefs.PasswordField, new ProtectedString( false, m_UserControl.Password ) );
+			entry.Strings.Set(PasswordField, new ProtectedString(memprotect_password, m_UserControl.Password));
         }
    }
 }
