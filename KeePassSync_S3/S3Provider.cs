@@ -27,11 +27,12 @@ namespace KeePassSync_S3
 		private AccountDetails m_UserControl;
         #endregion
 
-		private const string access_key_field = PwDefs.UserNameField;
-		private const string secret_access_key_field = PwDefs.PasswordField;
+		private const string access_key_field = PwDefs.UserNameField;	
 		private const string bucket_name_field = PwDefs.UrlField;
 		private const string create_backups_field = "create_backups";
+		private const string secret_access_key_field = PwDefs.PasswordField;
 		private bool memprotect_secret_access_key = true;
+
 
 		public override KeePassSyncErr Initialize(KeePassSyncExt mainInterface)
 		{
@@ -80,8 +81,8 @@ namespace KeePassSync_S3
 			AccountDetails old_details = m_UserControl;
 			m_UserControl = new AccountDetails();
 			DecodeEntry(entry);
-			verify_bucket_or_create(m_UserControl.BucketName);
-			
+			ret = verify_bucket_or_create(m_UserControl.BucketName);
+			m_UserControl = old_details;
 			return ret;
 		}
 
