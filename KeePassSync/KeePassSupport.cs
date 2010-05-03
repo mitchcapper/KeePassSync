@@ -194,6 +194,8 @@ namespace KeePassSync
         public static bool CheckEntry(IPluginHost host, PwEntry entry)
         {
             bool ret = false;
+			if (entry==null)
+				return false;
             PwEntry newEntry = host.Database.RootGroup.FindEntry(entry.Uuid, true);
             if (newEntry == null)
             {

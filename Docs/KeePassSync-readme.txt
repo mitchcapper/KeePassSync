@@ -44,6 +44,13 @@ Once you do that, you can immediately sync with your online provider which will 
 Once you go to another computer, you will want to open the database from the online provider.  You don't have to create an entry, but you will have to select from the options which provider you want to use.  After that, select "Tools->KeePassSync->Open", select which provider you want to use.  Input your account details for your online provider, click ok, and a list of previously synchronized databases will appear.  Select which database you wish to open locally and declare a storage location for it.  From then on, you may open the local database normally and synchronize whenever you want.
 
 
+Services:
+---------------
+KeePassSync supports the following services natively (although other users can add other services):
+digitalbucket.net
+FTP/SFTP (through plink/psftp from PUTTY)
+Amazon S3
+
 How to compile:
 ---------------
 This solution is compiled using Visual Studio 2008.

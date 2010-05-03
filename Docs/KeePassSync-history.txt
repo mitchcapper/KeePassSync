@@ -1,3 +1,17 @@
+2009-03-10: v2.10.1
+- Fixed DigitalBucket New Database Initialization
+- SFTP: Added Key Authentication through option to use Paegent
+- SFTP: Command line arguments are now quoted so support spacing
+- SFTP: Added configurable timeout
+- SFTP: Added ability to change path for executables
+- SFTP: Added debug mode
+- SFTP: Added ability to set port for host
+- SFTP: Code Cleanup
+
+
+2009-03-10: v2.10
+- Compatible with KeePass v2.10
+
 2009-02-20: v2.09
 - Compatible with KeePass v2.09
 - Fixes to Double Creation Entries and Editing Problems

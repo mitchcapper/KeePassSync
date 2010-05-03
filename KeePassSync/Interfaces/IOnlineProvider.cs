@@ -174,7 +174,8 @@ namespace KeePassSync
                 DialogResult res = dialog.ShowDialog();
                 if ( res == DialogResult.OK )
                 {
-                    dialog.EncodeEntry( entry );
+					if (entry != null)
+						dialog.EncodeEntry( entry );
                     ret = true;
                 }
             }
