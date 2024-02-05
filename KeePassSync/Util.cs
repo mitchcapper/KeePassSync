@@ -60,7 +60,6 @@ namespace KeePassSync {
 				"KeePassSync_digitalBucket.net.dll"
 				};
 
-			providers.Add(init_provider(new Providers.DigitalBucket.CDigitalbucket(), "DigitalBucket"));
 			providers.Add(init_provider(new Providers.S3.S3Provider(), "S3"));
 			providers.Add(init_provider(new Providers.SFTP.FtpProvider(), "SFTP"));
 			// Search through the directory for DLLs

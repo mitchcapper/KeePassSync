@@ -32,9 +32,6 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Providers\digitalbucket\AccountDetails.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Update="Providers\S3\AccountDetails.cs">
       <SubType>UserControl</SubType>
     </Compile>
