@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -136,7 +137,36 @@ namespace KeePassSync.Providers.S3 {
 			return m_UserControl;
 		}
 		public override string[] GetDatabases(PwEntry entry) {
-			throw new NotImplementedException();
+			DateTime stamp;
+			String sig;
+			const int MaxKeys = 50;
+			string Marker = null;
+			const string Delimiter = "/";
+			
+			DecodeEntry(entry);
+			List<string> databases = new List<string>();
+			while (true)
+			{
+				GenerateSigElements("ListBucket", out stamp, out sig);
+				var result = client.ListBucket(m_UserControl.BucketName, "", Marker, MaxKeys, true, Delimiter, m_UserControl.AccessKey, stamp, true, sig, null);
+				if (result == null)
+					throw new Exception("Bucket not found");
+				if (result.Contents != null)
+				{
+					foreach (ListEntry e in result.Contents)
+					{
+						if (e.Key.EndsWith(".kdbx"))
+							databases.Add(e.Key);
+					}
+				}
+					// If all of the results have been examined, stop
+				if (! result.IsTruncated)
+					break;
+					Marker = result.NextMarker;
+				if (Marker == null)
+					break;
+			}
+			return databases.ToArray();
 		}
 		private string get_md5(byte[] data) {
 			MD5 md5 = new MD5CryptoServiceProvider();

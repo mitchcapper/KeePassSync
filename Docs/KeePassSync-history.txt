@@ -1,3 +1,6 @@
+2016-04-01: v6.10
+-Unreleased, get databases in S3, minor other S3 updates, migration to .net 4.5
+
 2012-01-16: v6.0
 -Compat with keepass 2.18 and higher
 -S3 permission preservation
