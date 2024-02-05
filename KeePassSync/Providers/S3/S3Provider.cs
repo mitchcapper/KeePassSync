@@ -101,20 +101,20 @@ namespace KeePassSync.Providers.S3 {
 					return err;
 				DateTime stamp;
 				String sig;
-				if ((m_UserControl.CreateBackups) && fileExists(remoteFilename)){
+				if ((m_UserControl.CreateBackups) && fileExists(remoteFilename)) {
 					string backupFilename = remoteFilename + ".bkup_day" + DateTime.Today.Day;
 
 					GenerateSigElements("CopyObject", out stamp, out sig);
 					client.CopyObject(m_UserControl.BucketName, remoteFilename, m_UserControl.BucketName, backupFilename,
-					                  MetadataDirective.COPY, true, null, null, System.DateTime.MinValue, false,
-					                  System.DateTime.MinValue, false, null, null, StorageClass.STANDARD, false,
-					                  m_UserControl.AccessKey, stamp, true, sig, null);
+									  MetadataDirective.COPY, true, null, null, System.DateTime.MinValue, false,
+									  System.DateTime.MinValue, false, null, null, StorageClass.STANDARD, false,
+									  m_UserControl.AccessKey, stamp, true, sig, null);
 				}
 				Grant[] acl = null;
-				if (fileExists(remoteFilename)){
+				if (fileExists(remoteFilename)) {
 					GenerateSigElements("GetObjectAccessControlPolicy", out stamp, out sig);
 					AccessControlPolicy policy = client.GetObjectAccessControlPolicy(m_UserControl.BucketName, remoteFilename,
-					                                                                 m_UserControl.AccessKey, stamp, true, sig, null);
+																					 m_UserControl.AccessKey, stamp, true, sig, null);
 					acl = policy.AccessControlList;
 				}
 
@@ -127,8 +127,7 @@ namespace KeePassSync.Providers.S3 {
 				string hash = get_md5(data);
 				if (hash != result.ETag)
 					throw new Exception("File uploaded but our hash of: " + hash + " does not match server hash of: " + result.ETag);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				return convert_exception(e);
 			}
 			return KeePassSyncErr.None;
@@ -142,27 +141,24 @@ namespace KeePassSync.Providers.S3 {
 			const int MaxKeys = 50;
 			string Marker = null;
 			const string Delimiter = "/";
-			
+
 			DecodeEntry(entry);
 			List<string> databases = new List<string>();
-			while (true)
-			{
+			while (true) {
 				GenerateSigElements("ListBucket", out stamp, out sig);
 				var result = client.ListBucket(m_UserControl.BucketName, "", Marker, MaxKeys, true, Delimiter, m_UserControl.AccessKey, stamp, true, sig, null);
 				if (result == null)
 					throw new Exception("Bucket not found");
-				if (result.Contents != null)
-				{
-					foreach (ListEntry e in result.Contents)
-					{
+				if (result.Contents != null) {
+					foreach (ListEntry e in result.Contents) {
 						if (e.Key.EndsWith(".kdbx"))
 							databases.Add(e.Key);
 					}
 				}
-					// If all of the results have been examined, stop
-				if (! result.IsTruncated)
+				// If all of the results have been examined, stop
+				if (!result.IsTruncated)
 					break;
-					Marker = result.NextMarker;
+				Marker = result.NextMarker;
 				if (Marker == null)
 					break;
 			}
@@ -207,8 +203,7 @@ namespace KeePassSync.Providers.S3 {
 				BinaryWriter writer = new BinaryWriter(File.OpenWrite(localFilename));
 				writer.Write(data);
 				writer.Close();
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				return convert_exception(e);
 			}
 			return KeePassSyncErr.None;
@@ -287,8 +282,7 @@ namespace KeePassSync.Providers.S3 {
 						return KeePassSyncErr.None;
 				}
 				throw new Exception("Unable to find bucket, even after creating");
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				return convert_exception(e);
 			}
 		}

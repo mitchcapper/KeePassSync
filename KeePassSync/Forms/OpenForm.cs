@@ -30,212 +30,170 @@ using KeePass;
 using KeePassLib;
 
 
-namespace KeePassSync.Forms
-{
-    public partial class OpenForm : Form
-    {
-        private KeePassSyncExt m_MainInterface;
-        private string m_OnlineProviderKey;
-        public string OnlineProviderKey { get { return m_OnlineProviderKey; } }
+namespace KeePassSync.Forms {
+	public partial class OpenForm : Form {
+		private KeePassSyncExt m_MainInterface;
+		private string m_OnlineProviderKey;
+		public string OnlineProviderKey { get { return m_OnlineProviderKey; } }
 
-        private PwEntry m_Entry;
-        public PwEntry Entry 
-        { 
-            get { return m_Entry; }
-            set { m_Entry = (PwEntry)value.CloneDeep(); }
-        } 
+		private PwEntry m_Entry;
+		public PwEntry Entry {
+			get { return m_Entry; }
+			set { m_Entry = (PwEntry)value.CloneDeep(); }
+		}
 
-        public OpenForm(KeePassSyncExt mainInterface)
-        {
-            m_MainInterface = mainInterface;
-            InitializeComponent();
-            // only do this here so i initialize the key on new()
-            PopulateComboBox(); 
-        }
+		public OpenForm(KeePassSyncExt mainInterface) {
+			m_MainInterface = mainInterface;
+			InitializeComponent();
+			// only do this here so i initialize the key on new()
+			PopulateComboBox();
+		}
 
-        private OpenForm()
-        {
-        }
+		private OpenForm() {
+		}
 
-        private void RefreshBannerImage()
-        {
-            string subString = "Please enter your account information.";
-            if ( m_OnlineProviderKey != null )
-            {
-                subString = "Please enter your " + m_MainInterface.GetOnlineProvider( m_OnlineProviderKey ).Name + " account information.";
-            }
-            
-            m_BannerImage.Image = KeePass.UI.BannerFactory.CreateBanner( m_BannerImage.Width,
-                m_BannerImage.Height, KeePass.UI.BannerStyle.Default, Properties.Resources.Img_48x48_Password,
-                "Open Online Database",
-                subString );
-        }
+		private void RefreshBannerImage() {
+			string subString = "Please enter your account information.";
+			if (m_OnlineProviderKey != null) {
+				subString = "Please enter your " + m_MainInterface.GetOnlineProvider(m_OnlineProviderKey).Name + " account information.";
+			}
 
-        private void OpenForm_Load(object sender, EventArgs e)
-        {
-            RefreshBannerImage();
-            ResetForm();
+			m_BannerImage.Image = KeePass.UI.BannerFactory.CreateBanner(m_BannerImage.Width,
+				m_BannerImage.Height, KeePass.UI.BannerStyle.Default, Properties.Resources.Img_48x48_Password,
+				"Open Online Database",
+				subString);
+		}
 
-            this.Icon = m_MainInterface.Host.MainWindow.Icon;
+		private void OpenForm_Load(object sender, EventArgs e) {
+			RefreshBannerImage();
+			ResetForm();
 
-            this.Left = m_MainInterface.Host.MainWindow.Left + (m_MainInterface.Host.MainWindow.Width - this.Width) / 2;
-            this.Top = m_MainInterface.Host.MainWindow.Top + (m_MainInterface.Host.MainWindow.Height - this.Height) / 2;
-        }
+			this.Icon = m_MainInterface.Host.MainWindow.Icon;
 
-        private void m_btnCancel_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.Cancel;
-            m_Entry = null;
-            this.Close();
-        }
+			this.Left = m_MainInterface.Host.MainWindow.Left + (m_MainInterface.Host.MainWindow.Width - this.Width) / 2;
+			this.Top = m_MainInterface.Host.MainWindow.Top + (m_MainInterface.Host.MainWindow.Height - this.Height) / 2;
+		}
 
-        private void m_btnOk_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.OK;
-            if ( m_OnlineProviderKey != null )
-            {
-                if ( m_Entry == null )
-                {
-                    m_Entry = new PwEntry( true, true );
-                    if ( m_Entry == null )
-                    {
-                        m_MainInterface.SetStatus( StatusPriority.eMessageBoxInfo, "Couldn't create KeePass entry." );
-                    }
-                }
-                m_MainInterface.GetOnlineProvider( m_OnlineProviderKey ).EncodeEntry( m_Entry );
-            }
-            else
-            {
-                m_MainInterface.SetStatus( StatusPriority.eMessageBoxInfo, "Provider key invalid." );
-            }
-            this.Close();
-        }
+		private void m_btnCancel_Click(object sender, EventArgs e) {
+			DialogResult = DialogResult.Cancel;
+			m_Entry = null;
+			this.Close();
+		}
 
-        public void DecodeEntry( PwEntry entry )
-        {
-            m_MainInterface.GetOnlineProvider( m_OnlineProviderKey ).DecodeEntry( entry );
-        }
+		private void m_btnOk_Click(object sender, EventArgs e) {
+			DialogResult = DialogResult.OK;
+			if (m_OnlineProviderKey != null) {
+				if (m_Entry == null) {
+					m_Entry = new PwEntry(true, true);
+					if (m_Entry == null) {
+						m_MainInterface.SetStatus(StatusPriority.eMessageBoxInfo, "Couldn't create KeePass entry.");
+					}
+				}
+				m_MainInterface.GetOnlineProvider(m_OnlineProviderKey).EncodeEntry(m_Entry);
+			} else {
+				m_MainInterface.SetStatus(StatusPriority.eMessageBoxInfo, "Provider key invalid.");
+			}
+			this.Close();
+		}
 
-        private void ResetForm()
-        {
-            PopulateComboBox();
-            RefreshGuiStates();
-            ResetAccountDetails();
-        }
+		public void DecodeEntry(PwEntry entry) {
+			m_MainInterface.GetOnlineProvider(m_OnlineProviderKey).DecodeEntry(entry);
+		}
 
-        private void ResetAccountDetails()
-        {
-            panel1.Controls.Clear();
-            if ( m_OnlineProviderKey != null )
-            {
-                panel1.Controls.Add( m_MainInterface.GetOnlineProvider( m_OnlineProviderKey ).GetUserControl() );
-                ResizeDialog();
-                panel1.Enabled = true;
-            }
-            else
-            {
-                panel1.Enabled = false;
-            }
-        }
+		private void ResetForm() {
+			PopulateComboBox();
+			RefreshGuiStates();
+			ResetAccountDetails();
+		}
 
-        private void PopulateComboBox()
-        {
-            m_cboProvider.Items.Clear();
+		private void ResetAccountDetails() {
+			panel1.Controls.Clear();
+			if (m_OnlineProviderKey != null) {
+				panel1.Controls.Add(m_MainInterface.GetOnlineProvider(m_OnlineProviderKey).GetUserControl());
+				ResizeDialog();
+				panel1.Enabled = true;
+			} else {
+				panel1.Enabled = false;
+			}
+		}
 
-            if ( m_MainInterface.OnlineProviders.Length == 0 )
-            {
-                m_cboProvider.Items.Add( "No providers installed..." );
-            }
-            else
-            {
-                foreach ( IOnlineProvider provider in m_MainInterface.OnlineProviders )
-                {
-                    int index = m_cboProvider.Items.Add( provider );
+		private void PopulateComboBox() {
+			m_cboProvider.Items.Clear();
 
-                    // Set the default
-                    if ( ( m_OnlineProviderKey != null ) && ( m_OnlineProviderKey == provider.Key ) )
-                    {
-                        m_cboProvider.SelectedItem = m_cboProvider.Items[index];
-                    }
-                }
-            }
+			if (m_MainInterface.OnlineProviders.Length == 0) {
+				m_cboProvider.Items.Add("No providers installed...");
+			} else {
+				foreach (IOnlineProvider provider in m_MainInterface.OnlineProviders) {
+					int index = m_cboProvider.Items.Add(provider);
 
-            if ( m_cboProvider.Items.Count > 0 && m_cboProvider.SelectedItem == null )
-            {
-                m_cboProvider.SelectedItem = m_cboProvider.Items[0];
-            }
-        }
+					// Set the default
+					if ((m_OnlineProviderKey != null) && (m_OnlineProviderKey == provider.Key)) {
+						m_cboProvider.SelectedItem = m_cboProvider.Items[index];
+					}
+				}
+			}
 
-        private void ResizeDialog()
-        {
-            int maxWidth = 500;
-            int maxHeight = 700;
+			if (m_cboProvider.Items.Count > 0 && m_cboProvider.SelectedItem == null) {
+				m_cboProvider.SelectedItem = m_cboProvider.Items[0];
+			}
+		}
 
-            int panelHeight = panel1.Size.Height;
-            int panelWidth = panel1.Size.Width;
+		private void ResizeDialog() {
+			int maxWidth = 500;
+			int maxHeight = 700;
 
-            int diffHeight = m_MainInterface.GetOnlineProvider( m_OnlineProviderKey ).GetUserControl().Size.Height - panelHeight;
-            int diffWidth = m_MainInterface.GetOnlineProvider( m_OnlineProviderKey ).GetUserControl().Size.Width - panelWidth;
+			int panelHeight = panel1.Size.Height;
+			int panelWidth = panel1.Size.Width;
 
-            if ( diffHeight < 0 || ( diffHeight + panelHeight > maxHeight ) )
-                diffHeight = 0;
+			int diffHeight = m_MainInterface.GetOnlineProvider(m_OnlineProviderKey).GetUserControl().Size.Height - panelHeight;
+			int diffWidth = m_MainInterface.GetOnlineProvider(m_OnlineProviderKey).GetUserControl().Size.Width - panelWidth;
 
-            if ( diffWidth < 0 || ( diffWidth + panelWidth > maxWidth ) )
-                diffWidth = 0;
+			if (diffHeight < 0 || (diffHeight + panelHeight > maxHeight))
+				diffHeight = 0;
 
-            this.Size = this.Size + new System.Drawing.Size( diffWidth, diffHeight );
+			if (diffWidth < 0 || (diffWidth + panelWidth > maxWidth))
+				diffWidth = 0;
 
-            RefreshBannerImage();
-        }
+			this.Size = this.Size + new System.Drawing.Size(diffWidth, diffHeight);
 
-        private void RefreshGuiStates()
-        {
-            if ( m_OnlineProviderKey != null )
-            {
-                if ( m_MainInterface.GetOnlineProvider( m_OnlineProviderKey ).CreateAccountLink == null )
-                {
-                    m_lnkCreateAccount.Enabled = false;
-                }
-                else
-                {
-                    m_lnkCreateAccount.Enabled = true;
-                }
-            }
-        }
+			RefreshBannerImage();
+		}
 
-        private void OnCboProviderSelectionChangeCommitted( object sender, EventArgs e )
-        {
-            // get the provider and show the entry generator
-            if ( m_cboProvider.SelectedItem.GetType().BaseType == typeof( IOnlineProvider ) )
-            {
-                IOnlineProvider provider = (IOnlineProvider)( (IOnlineProvider)m_cboProvider.SelectedItem ).Clone();
-                if ( provider != null )
-                {
-                    if ( !provider.IsInitialized )
-                    {
-                        provider.Initialize( m_MainInterface );
-                    }
+		private void RefreshGuiStates() {
+			if (m_OnlineProviderKey != null) {
+				if (m_MainInterface.GetOnlineProvider(m_OnlineProviderKey).CreateAccountLink == null) {
+					m_lnkCreateAccount.Enabled = false;
+				} else {
+					m_lnkCreateAccount.Enabled = true;
+				}
+			}
+		}
 
-                    m_OnlineProviderKey = provider.Key;
-                }
-            }
-            RefreshGuiStates();
-            ResetAccountDetails();
-        }
+		private void OnCboProviderSelectionChangeCommitted(object sender, EventArgs e) {
+			// get the provider and show the entry generator
+			if (m_cboProvider.SelectedItem.GetType().BaseType == typeof(IOnlineProvider)) {
+				IOnlineProvider provider = (IOnlineProvider)((IOnlineProvider)m_cboProvider.SelectedItem).Clone();
+				if (provider != null) {
+					if (!provider.IsInitialized) {
+						provider.Initialize(m_MainInterface);
+					}
 
-        private void OnLblCreateAccountClicked( object sender, LinkLabelLinkClickedEventArgs e )
-        {
-            if ( m_cboProvider.SelectedItem != null )
-            {
-                IOnlineProvider provider = (IOnlineProvider)m_cboProvider.SelectedItem;
-                if ( provider != null && provider.CreateAccountLink != null )
-                {
-                    if ( provider.CreateAccountLink.StartsWith( "http://" ) || provider.CreateAccountLink.StartsWith( "https://" ) )
-                    {
-                        System.Diagnostics.Process.Start( provider.CreateAccountLink );
-                    }
-                }
-            }
-        }
-    }
+					m_OnlineProviderKey = provider.Key;
+				}
+			}
+			RefreshGuiStates();
+			ResetAccountDetails();
+		}
+
+		private void OnLblCreateAccountClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+			if (m_cboProvider.SelectedItem != null) {
+				IOnlineProvider provider = (IOnlineProvider)m_cboProvider.SelectedItem;
+				if (provider != null && provider.CreateAccountLink != null) {
+					if (provider.CreateAccountLink.StartsWith("http://") || provider.CreateAccountLink.StartsWith("https://")) {
+						System.Diagnostics.Process.Start(provider.CreateAccountLink);
+					}
+				}
+			}
+		}
+	}
 }

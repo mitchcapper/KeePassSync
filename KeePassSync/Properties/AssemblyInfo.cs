@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("KeePassSync")]
 [assembly: AssemblyDescription("Online Sync Plugin for KeePass Password Safe")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany( "" )]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("KeePass Plugin")]
 [assembly: AssemblyCopyright("Copyright © 2010")]
 [assembly: AssemblyTrademark("")]

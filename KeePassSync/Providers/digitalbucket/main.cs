@@ -24,11 +24,9 @@ using KeePassLib;
 using KeePassLib.Security;
 
 
-namespace KeePassSync.Providers.DigitalBucket
-{
+namespace KeePassSync.Providers.DigitalBucket {
 	// This provider stores databases in the root folder right now...
-	public class CDigitalbucket : IOnlineProvider
-	{
+	public class CDigitalbucket : IOnlineProvider {
 		#region -- Private data --
 		private digitalbucket.net.rest.DigitalBucketConnection m_Service;
 		private const string m_ServiceAddress = "https://www.digitalbucket.net/api/rest/";
@@ -43,20 +41,15 @@ namespace KeePassSync.Providers.DigitalBucket
 
 		#endregion
 
-		public override KeePassSyncErr Initialize(KeePassSyncExt mainInterface)
-		{
+		public override KeePassSyncErr Initialize(KeePassSyncExt mainInterface) {
 			KeePassSyncErr ret = base.Initialize(mainInterface);
 
-			if (ret == KeePassSyncErr.None)
-			{
+			if (ret == KeePassSyncErr.None) {
 				m_UserControl = new AccountDetails();
 
-				if (m_OptionData != null)
-				{
+				if (m_OptionData != null) {
 					ret = InitializeService();
-				}
-				else
-				{
+				} else {
 					ret = KeePassSyncErr.InvalidCredentials;
 				}
 			}
@@ -67,8 +60,7 @@ namespace KeePassSync.Providers.DigitalBucket
 		}
 
 
-		public override KeePassSyncErr ValidateOptions(OptionsData options)
-		{
+		public override KeePassSyncErr ValidateOptions(OptionsData options) {
 			m_OptionData = options;
 			return InitializeService();
 		}
@@ -81,40 +73,34 @@ namespace KeePassSync.Providers.DigitalBucket
 		/// <param name="databaseName"></param>
 		/// <param name="filename"></param>
 		/// <returns></returns>
-		public override KeePassSyncErr PutFile(PwEntry entry, string databaseName, string filename)
-		{
+		public override KeePassSyncErr PutFile(PwEntry entry, string databaseName, string filename) {
 			KeePassSyncErr ret = KeePassSyncErr.Error;
 
 			// Make the database name conform to our internal naming convention
 			string realDbName = ONLINE_DB_PREFIX + databaseName;
 
 			digitalbucket.net.rest.CustomResponse<digitalbucket.net.rest.Folder> res = m_Service.GetRootFolder();
-			if (res.Success == true)
-			{
+			if (res.Success == true) {
 				digitalbucket.net.rest.Folder currentFolder = res.ResponseObject;
 
 				// Delete the file first
 				// Must retrieve the file
-				foreach (digitalbucket.net.rest.File file in currentFolder.ChildFiles)
-				{
-					if (file.FileName.ToLower() == realDbName.ToLower())
-					{
+				foreach (digitalbucket.net.rest.File file in currentFolder.ChildFiles) {
+					if (file.FileName.ToLower() == realDbName.ToLower()) {
 						m_Service.DeleteFile(file.FileID);
 						break;
 					}
 				}
 
 				digitalbucket.net.rest.Response rsp = m_Service.PutFile(currentFolder.FolderID, realDbName, System.IO.File.Open(filename, System.IO.FileMode.Open));
-				if (rsp.Success)
-				{
+				if (rsp.Success) {
 					ret = KeePassSyncErr.None;
 				}
 			}
 			return ret;
 		}
 
-		public override KeePassSyncErr GetFile(PwEntry entry, string databaseName, string filename)
-		{
+		public override KeePassSyncErr GetFile(PwEntry entry, string databaseName, string filename) {
 			digitalbucket.net.rest.File onlineFile = null;
 			KeePassSyncErr ret = KeePassSyncErr.FileNotFound; // default to error
 
@@ -122,90 +108,68 @@ namespace KeePassSync.Providers.DigitalBucket
 			string realDbName = ONLINE_DB_PREFIX + databaseName;
 
 			digitalbucket.net.rest.CustomResponse<digitalbucket.net.rest.Folder> res = m_Service.GetRootFolder();
-			if (res.Success == true)
-			{
+			if (res.Success == true) {
 				digitalbucket.net.rest.Folder currentFolder = res.ResponseObject;
-				foreach (digitalbucket.net.rest.File file in currentFolder.ChildFiles)
-				{
-					if (file.FileName.ToLower() == realDbName.ToLower())
-					{
+				foreach (digitalbucket.net.rest.File file in currentFolder.ChildFiles) {
+					if (file.FileName.ToLower() == realDbName.ToLower()) {
 						onlineFile = file;
 						break;
 					}
 				}
 
-				if (onlineFile != null)
-				{
+				if (onlineFile != null) {
 					ret = GetFileOnline(onlineFile, filename);
 				}
 			}
 			return ret;
 		}
 
-		public override string CreateAccountLink
-		{
+		public override string CreateAccountLink {
 			get { return m_AccountLink; }
 		}
 
-		public override string Name
-		{
+		public override string Name {
 			get { return m_Name; }
 		}
 
-		public override string[] AcceptedNames
-		{
+		public override string[] AcceptedNames {
 			get { return m_AcceptedNames; }
 		}
 
-		public override string[] Databases
-		{
-			get
-			{
+		public override string[] Databases {
+			get {
 				ArrayList databases = new ArrayList();
 				digitalbucket.net.rest.CustomResponse<digitalbucket.net.rest.Folder> res = m_Service.GetRootFolder();
-				if (res.Success == true)
-				{
+				if (res.Success == true) {
 					digitalbucket.net.rest.Folder currentFolder = res.ResponseObject;
 
-					foreach (digitalbucket.net.rest.File file in currentFolder.ChildFiles)
-					{
-						if (file.FileName.ToLower().StartsWith(ONLINE_DB_PREFIX.ToLower()))
-						{
+					foreach (digitalbucket.net.rest.File file in currentFolder.ChildFiles) {
+						if (file.FileName.ToLower().StartsWith(ONLINE_DB_PREFIX.ToLower())) {
 							databases.Add(file.FileName.Substring(ONLINE_DB_PREFIX.Length));
 						}
 					}
-				}
-				else
-				{
+				} else {
 					m_MainInterface.SetStatus(StatusPriority.eMessageBoxInfo, "Cannot retrieve online information from " + Name + " service (" + res.StatusDescription + ").");
 				}
 				return (string[])databases.ToArray(typeof(string));
 			}
 		}
 
-		private KeePassSyncErr GetFileOnline(digitalbucket.net.rest.File file, string filename)
-		{
+		private KeePassSyncErr GetFileOnline(digitalbucket.net.rest.File file, string filename) {
 			KeePassSyncErr ret = KeePassSyncErr.FileNotFound;
 
 			digitalbucket.net.rest.StreamResponse rsp = m_Service.GetFile(file.FileID);
-			if (rsp.Success == true)
-			{
-				using (System.IO.Stream s = rsp.ResponseStream)
-				{
-					using (System.IO.Stream streamWriter = File.OpenWrite(filename))
-					{
+			if (rsp.Success == true) {
+				using (System.IO.Stream s = rsp.ResponseStream) {
+					using (System.IO.Stream streamWriter = File.OpenWrite(filename)) {
 						int size = 2048;
 						byte[] data = new byte[2048];
-						while (true)
-						{
+						while (true) {
 							size = s.Read(data, 0, data.Length);
-							if (size > 0)
-							{
+							if (size > 0) {
 								streamWriter.Write(data, 0, size);
 								ret = KeePassSyncErr.None;
-							}
-							else
-							{
+							} else {
 								break;
 							}
 						}
@@ -215,37 +179,28 @@ namespace KeePassSync.Providers.DigitalBucket
 			return ret;
 		}
 
-		private KeePassSyncErr InitializeService()
-		{
+		private KeePassSyncErr InitializeService() {
 			KeePassSyncErr ret = KeePassSyncErr.Error;
 
-			try
-			{
+			try {
 				m_Service = null;
-				if (m_OptionData != null)
-				{
-					if (m_OptionData.PasswordEntry != null && m_OptionData.PasswordEntry.Strings.Exists(PwDefs.UserNameField) && m_OptionData.PasswordEntry.Strings.Exists(PasswordField))
-					{
+				if (m_OptionData != null) {
+					if (m_OptionData.PasswordEntry != null && m_OptionData.PasswordEntry.Strings.Exists(PwDefs.UserNameField) && m_OptionData.PasswordEntry.Strings.Exists(PasswordField)) {
 						ProtectedString user = m_OptionData.PasswordEntry.Strings.Get(PwDefs.UserNameField);
 						ProtectedString pw = m_OptionData.PasswordEntry.Strings.Get(PasswordField);
 
 						m_MainInterface.SetStatus(StatusPriority.eStatusBar, "Initializing " + Name + " service...");
 						m_Service = new digitalbucket.net.rest.DigitalBucketConnection(user.ReadString(), pw.ReadString(), m_ServiceAddress);
 						digitalbucket.net.rest.CustomResponse<digitalbucket.net.rest.Folder> res = m_Service.GetRootFolder();
-						if (res.Success == false)
-						{
+						if (res.Success == false) {
 							m_Service = null;
 							m_MainInterface.SetStatus(StatusPriority.eStatusBar, "Error initializing " + Name + " service (" + res.StatusDescription + ").");
-						}
-						else
-						{
+						} else {
 							m_MainInterface.SetStatus(StatusPriority.eStatusBar, Name + " service initialized.");
 						}
 					}
 				}
-			}
-			catch
-			{
+			} catch {
 				ret = KeePassSyncErr.Error;
 			}
 
@@ -256,8 +211,7 @@ namespace KeePassSync.Providers.DigitalBucket
 		}
 
 		// This means that it's called from the open form, there is no service or valid option data
-		public override string[] GetDatabases(PwEntry entry)
-		{
+		public override string[] GetDatabases(PwEntry entry) {
 			Debug.Assert(entry != null, "Invalid entry");
 
 			string[] databases = null;
@@ -276,13 +230,11 @@ namespace KeePassSync.Providers.DigitalBucket
 			return databases;
 		}
 
-		public override System.Windows.Forms.UserControl GetUserControl()
-		{
+		public override System.Windows.Forms.UserControl GetUserControl() {
 			return m_UserControl;
 		}
 
-		public override void DecodeEntry(PwEntry entry)
-		{
+		public override void DecodeEntry(PwEntry entry) {
 			Debug.Assert(entry != null, "Invalid entry");
 
 			if (entry.Strings.Get(PwDefs.UserNameField) != null)
@@ -292,8 +244,7 @@ namespace KeePassSync.Providers.DigitalBucket
 				m_UserControl.Password = entry.Strings.Get(PasswordField).ReadString();
 		}
 
-		public override void EncodeEntry(PwEntry entry)
-		{
+		public override void EncodeEntry(PwEntry entry) {
 			Debug.Assert(entry != null, "Invalid entry");
 
 			entry.Strings.Set(PwDefs.UserNameField, new ProtectedString(false, m_UserControl.Username));

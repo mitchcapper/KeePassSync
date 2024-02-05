@@ -7,33 +7,27 @@ using System;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace digitalbucket.net.rest
-{
-    [XmlRoot("Tags")]
-    public class TagCollection
-    {
-        private Tag[] _tags;
+namespace digitalbucket.net.rest {
+	[XmlRoot("Tags")]
+	public class TagCollection {
+		private Tag[] _tags;
 
-        public TagCollection()
-        { }
+		public TagCollection() { }
 
-        [XmlElementAttribute("Tag")]
-        public Tag[] Tags
-        {
-            get { return _tags; }
-            set { _tags = value; }
-        }
-    }
+		[XmlElementAttribute("Tag")]
+		public Tag[] Tags {
+			get { return _tags; }
+			set { _tags = value; }
+		}
+	}
 
-    public struct Tag
-    {
-        public string Name;
-        public int Count;
+	public struct Tag {
+		public string Name;
+		public int Count;
 
-        public Tag(string name, int count)
-        {
-            Name = name;
-            Count = count;
-        }
-    }
+		public Tag(string name, int count) {
+			Name = name;
+			Count = count;
+		}
+	}
 }

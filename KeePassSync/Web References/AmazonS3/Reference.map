@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<DiscoveryClientResultsFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Results>
-    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.ContractReference" url="http://doc.s3.amazonaws.com/2006-03-01/AmazonS3.wsdl" filename="AmazonS3.wsdl" />
-    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.SchemaReference" url="http://doc.s3.amazonaws.com/2006-03-01/AmazonS3.xsd" filename="AmazonS3.xsd" />
-  </Results>
-</DiscoveryClientResultsFile>

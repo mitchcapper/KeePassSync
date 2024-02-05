@@ -24,10 +24,8 @@ using System.IO;
 using KeePassLib;
 using KeePassLib.Security;
 
-namespace KeePassSync.Providers.SFTP
-{
-	public class FtpProvider : IOnlineProvider
-	{
+namespace KeePassSync.Providers.SFTP {
+	public class FtpProvider : IOnlineProvider {
 		#region -- Private data --
 		private const string m_Name = "SCP/SFTP";
 		private const string ONLINE_DB_PREFIX = "Keepass-";
@@ -49,16 +47,13 @@ namespace KeePassSync.Providers.SFTP
 		#endregion
 
 		private enum EXEC { PLINK, PSCP };
-		private string str_qwt(string str)
-		{
+		private string str_qwt(string str) {
 			return "\"" + str + "\"";
 		}
-		private KeePassSyncErr command_plink(String command)
-		{
+		private KeePassSyncErr command_plink(String command) {
 			return _run_command(EXEC.PLINK, "", command, false);
 		}
-		private KeePassSyncErr command_scp(String source_file, String dest_file, bool is_get)
-		{
+		private KeePassSyncErr command_scp(String source_file, String dest_file, bool is_get) {
 			if (!is_get)
 				source_file = str_qwt(source_file);
 			else
@@ -66,14 +61,12 @@ namespace KeePassSync.Providers.SFTP
 
 			return _run_command(EXEC.PSCP, source_file, dest_file, is_get);
 		}
-		private KeePassSyncErr _run_command(EXEC exec, String command_before, String command_after, bool is_get)
-		{
+		private KeePassSyncErr _run_command(EXEC exec, String command_before, String command_after, bool is_get) {
 			KeePassSyncErr ret = KeePassSyncErr.None;
 			if (String.IsNullOrEmpty(m_UserControl.Host))
 				return KeePassSyncErr.Error;
 
-			try
-			{
+			try {
 				System.Diagnostics.Process process = new Process();
 				if (process == null)
 					return KeePassSyncErr.Error;
@@ -84,14 +77,11 @@ namespace KeePassSync.Providers.SFTP
 				else
 					commandStr += " -pw " + str_qwt(m_UserControl.Password);
 				commandStr += " -P " + str_qwt(m_UserControl.Port);
-				if (m_UserControl.DebugMode)
-				{
+				if (m_UserControl.DebugMode) {
 					process.StartInfo.CreateNoWindow = false;
 					commandStr += " -v";
 					process.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
-				}
-				else
-				{
+				} else {
 					process.StartInfo.CreateNoWindow = true;
 					process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 				}
@@ -114,8 +104,7 @@ namespace KeePassSync.Providers.SFTP
 				String exec_path = m_UserControl.ExecRoot;
 				if (String.IsNullOrEmpty(exec_path))
 					exec_path = KeePassSyncExt.PluginDirectory;
-				switch (exec)
-				{
+				switch (exec) {
 					case EXEC.PSCP:
 						exec_path += "\\" + "pscp.exe";
 						break;
@@ -123,8 +112,7 @@ namespace KeePassSync.Providers.SFTP
 						exec_path += "\\" + "plink.exe";
 						break;
 				}
-				if (!System.IO.File.Exists(exec_path))
-				{
+				if (!System.IO.File.Exists(exec_path)) {
 					m_MainInterface.SetStatus(StatusPriority.eMessageBoxInfo, "Unable to find pscp/plink.exe at the path specified please check");
 					return KeePassSyncErr.Error;
 				}
@@ -137,23 +125,19 @@ namespace KeePassSync.Providers.SFTP
 
 				if (exitedOnTime)
 					ret = KeePassSyncErr.None;
-				else
-				{
+				else {
 					m_MainInterface.SetStatus(StatusPriority.eMessageBoxInfo, "A timeout occurred validating options using FTP/SCP provider.\n\nAre you sure you've authenticated your server?\nSee docs\\KeePassSync-readme.txt for details.");
 					ret = KeePassSyncErr.Timeout;
 				}
 
 
-			}
-			catch
-			{
+			} catch {
 				ret = KeePassSyncErr.Error;
 			}
 			return ret;
 		}
 		private string KeepassDirFilename { get { return KeePassSyncExt.PluginDirectory + "\\KeePassSyncDir.txt"; } }
-		public override KeePassSyncErr Initialize(KeePassSyncExt mainInterface)
-		{
+		public override KeePassSyncErr Initialize(KeePassSyncExt mainInterface) {
 			KeePassSyncErr ret = base.Initialize(mainInterface);
 
 			m_UserControl = new AccountDetails();
@@ -163,8 +147,7 @@ namespace KeePassSync.Providers.SFTP
 			return ret;
 		}
 
-		public override KeePassSyncErr ValidateOptions(OptionsData options)
-		{
+		public override KeePassSyncErr ValidateOptions(OptionsData options) {
 			KeePassSyncErr ret = KeePassSyncErr.None;
 			PwEntry entry = m_OptionData.PasswordEntry;
 			AccountDetails old_details = m_UserControl;
@@ -184,8 +167,7 @@ namespace KeePassSync.Providers.SFTP
 		/// <param name="databaseName"></param>
 		/// <param name="filename"></param>
 		/// <returns></returns>
-		public override KeePassSyncErr PutFile(PwEntry entry, string databaseName, string filename)
-		{
+		public override KeePassSyncErr PutFile(PwEntry entry, string databaseName, string filename) {
 			DecodeEntry(entry);
 			KeePassSyncErr ret = KeePassSyncErr.Error;
 			System.Diagnostics.Process process = new Process();
@@ -204,8 +186,7 @@ namespace KeePassSync.Providers.SFTP
 
 
 			// Send the new file
-			if (ret == KeePassSyncErr.None)
-			{
+			if (ret == KeePassSyncErr.None) {
 				ret = command_scp(filename, directory + remoteDatabaseName, false);
 				if (ret == KeePassSyncErr.None)
 					ret = CheckRemoteFileExists(remoteDatabaseName);
@@ -213,15 +194,12 @@ namespace KeePassSync.Providers.SFTP
 			return ret;
 		}
 
-		private KeePassSyncErr CheckRemoteFileExists(string remoteDatabaseName)
-		{
+		private KeePassSyncErr CheckRemoteFileExists(string remoteDatabaseName) {
 			KeePassSyncErr ret = KeePassSyncErr.Error;
 
-			try
-			{
+			try {
 				ret = RemoteDatabaseListing(KeepassDirFilename);
-				if (ret == KeePassSyncErr.None)
-				{
+				if (ret == KeePassSyncErr.None) {
 					string directory = m_UserControl.Directory;
 					if (directory != "" && !directory.EndsWith("/"))
 						directory += "/";
@@ -229,26 +207,19 @@ namespace KeePassSync.Providers.SFTP
 					// read the text file for databases
 					ret = KeePassSyncErr.FileNotFound;
 					string[] lines = File.ReadAllLines(KeepassDirFilename);
-					if (lines.Length > 0)
-					{
-						foreach (string line in lines)
-						{
-							if (line == (directory + remoteDatabaseName))
-							{
+					if (lines.Length > 0) {
+						foreach (string line in lines) {
+							if (line == (directory + remoteDatabaseName)) {
 								ret = KeePassSyncErr.None;
 								break;
 							}
 						}
 					}
-				}
-				else
-				{
+				} else {
 					ret = KeePassSyncErr.FileNotFound;
 				}
 
-			}
-			catch
-			{
+			} catch {
 				ret = KeePassSyncErr.Error;
 			}
 
@@ -258,8 +229,7 @@ namespace KeePassSync.Providers.SFTP
 			return ret;
 		}
 
-		public override KeePassSyncErr GetFile(PwEntry entry, string databaseName, string filename)
-		{
+		public override KeePassSyncErr GetFile(PwEntry entry, string databaseName, string filename) {
 			Debug.Assert(entry != null, "Invalid entry");
 			DecodeEntry(entry);
 			KeePassSyncErr ret = KeePassSyncErr.None;
@@ -282,31 +252,25 @@ namespace KeePassSync.Providers.SFTP
 		}
 
 
-		public override string CreateAccountLink
-		{
+		public override string CreateAccountLink {
 			get { return null; }
 		}
 
-		public override string Name
-		{
+		public override string Name {
 			get { return m_Name; }
 		}
 
-		public override string[] AcceptedNames
-		{
+		public override string[] AcceptedNames {
 			get { return m_AcceptedNames; }
 		}
 
-		public override string[] Databases
-		{
-			get
-			{
+		public override string[] Databases {
+			get {
 				return GetDatabases(m_OptionData.PasswordEntry);
 			}
 		}
 
-		private KeePassSyncErr RemoteDatabaseListing(string localListingFileFullPath)
-		{
+		private KeePassSyncErr RemoteDatabaseListing(string localListingFileFullPath) {
 			KeePassSyncErr ret = KeePassSyncErr.Error;
 
 			if (File.Exists(localListingFileFullPath))
@@ -320,8 +284,7 @@ namespace KeePassSync.Providers.SFTP
 			ret = command_plink("ls -1 " + str_qwt(remoteDirectory + ONLINE_DB_PREFIX + "*") + " > " + str_qwt(remoteDirectory + "KeePassSyncDir.txt"));
 
 
-			if (ret == KeePassSyncErr.None)
-			{
+			if (ret == KeePassSyncErr.None) {
 				ret = command_scp(remoteDirectory + "KeePassSyncDir.txt", localListingFileFullPath, true);
 				if (ret == KeePassSyncErr.None && !File.Exists(localListingFileFullPath))
 					ret = KeePassSyncErr.Error;
@@ -331,8 +294,7 @@ namespace KeePassSync.Providers.SFTP
 			return ret;
 		}
 
-		public override string[] GetDatabases(PwEntry entry)
-		{
+		public override string[] GetDatabases(PwEntry entry) {
 			Debug.Assert(entry != null, "Invalid entry");
 			AccountDetails old_details = m_UserControl;
 			m_UserControl = new AccountDetails();
@@ -345,8 +307,7 @@ namespace KeePassSync.Providers.SFTP
 			// then plink to delete the file again
 			// pscp doesn't like a full path, it likes it relative to the home folder
 			KeePassSyncErr err = RemoteDatabaseListing(KeepassDirFilename);
-			if (err == KeePassSyncErr.None)
-			{
+			if (err == KeePassSyncErr.None) {
 				// Generate directory listing
 				string remoteDirectory = m_UserControl.Directory;
 				if (remoteDirectory != "" && !remoteDirectory.EndsWith("/"))
@@ -355,18 +316,15 @@ namespace KeePassSync.Providers.SFTP
 				// read the text file for databases
 				string[] lines = File.ReadAllLines(KeepassDirFilename);
 				ArrayList databases = null;
-				if (lines.Length > 0)
-				{
+				if (lines.Length > 0) {
 					databases = new ArrayList();
-					foreach (string line in lines)
-					{
+					foreach (string line in lines) {
 						databases.Add(line.Substring(remoteDirectory.Length + ONLINE_DB_PREFIX.Length));
 					}
 					m_UserControl = old_details;
 					return (string[])databases.ToArray(typeof(string));
 				}
-			}
-			else if (err == KeePassSyncErr.Timeout)
+			} else if (err == KeePassSyncErr.Timeout)
 				m_MainInterface.SetStatus(StatusPriority.eMessageBoxInfo, "A timeout occurred retrieving databases.\n\nAre you sure you've authenticated your server?\nSee docs\\KeePassSync-readme.txt for details.");
 			else
 				m_MainInterface.SetStatus(StatusPriority.eMessageBoxInfo, "A general error occurred retrieving databases.\n\nAre you sure you've authenticated your server?\nSee docs\\KeePassSync-readme.txt for details.");
@@ -377,26 +335,22 @@ namespace KeePassSync.Providers.SFTP
 			return null;
 		}
 
-		public override System.Windows.Forms.UserControl GetUserControl()
-		{
+		public override System.Windows.Forms.UserControl GetUserControl() {
 			return m_UserControl;
 		}
-		public string read_PwEntry_string(PwEntry entry, String key)
-		{
+		public string read_PwEntry_string(PwEntry entry, String key) {
 			ProtectedString str = entry.Strings.Get(key);
 			if (str == null)
 				return "";
 			return str.ReadString();
 		}
-		public bool read_PwEntry_bool(PwEntry entry, String key)
-		{
+		public bool read_PwEntry_bool(PwEntry entry, String key) {
 			String val = read_PwEntry_string(entry, key);
 			if (val == "true")
 				return true;
 			return false;
 		}
-		public override void DecodeEntry(PwEntry entry)
-		{
+		public override void DecodeEntry(PwEntry entry) {
 			Debug.Assert(entry != null, "Invalid entry");
 			m_UserControl.Username = read_PwEntry_string(entry, fields_username);
 			m_UserControl.Password = read_PwEntry_string(entry, fields_password);
@@ -411,16 +365,13 @@ namespace KeePassSync.Providers.SFTP
 			m_UserControl.UsePaegentInstead = read_PwEntry_bool(entry, fields_paegent);
 
 		}
-		public void write_PwEntry_string(PwEntry entry, String key, String value, bool in_memory_encrypt)
-		{
+		public void write_PwEntry_string(PwEntry entry, String key, String value, bool in_memory_encrypt) {
 			entry.Strings.Set(key, new ProtectedString(in_memory_encrypt, value));
 		}
-		public void write_PwEntry_bool(PwEntry entry, String key, bool value, bool in_memory_encrypt)
-		{
+		public void write_PwEntry_bool(PwEntry entry, String key, bool value, bool in_memory_encrypt) {
 			write_PwEntry_string(entry, key, value ? "true" : "false", in_memory_encrypt);
 		}
-		public override void EncodeEntry(PwEntry entry)
-		{
+		public override void EncodeEntry(PwEntry entry) {
 			Debug.Assert(entry != null, "Invalid entry");
 			write_PwEntry_string(entry, fields_username, m_UserControl.Username, false);
 			write_PwEntry_string(entry, fields_password, m_UserControl.Password, memprotect_password);

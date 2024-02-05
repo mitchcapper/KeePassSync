@@ -1,23 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B9CECCA9-6C93-4278-AB8E-C15628DB852C}</ProjectGuid>
+    <TargetFramework>net472</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KeePassSync</RootNamespace>
-    <AssemblyName>KeePassSync</AssemblyName>
     <SignAssembly>true</SignAssembly>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -32,277 +18,31 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="KeePass">
-      <HintPath>..\..\..\..\kp\latest\KeePass.exe</HintPath>
+      <HintPath>..\..\KeePass\KeePass.exe</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Web.Services" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Forms\AccountEntryGenerator.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\AccountEntryGenerator.Designer.cs">
-      <DependentUpon>AccountEntryGenerator.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\OpenDbForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\OpenDbForm.Designer.cs">
-      <DependentUpon>OpenDbForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\OpenForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\OpenForm.Designer.cs">
-      <DependentUpon>OpenForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SelectDatabaseForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SelectDatabaseForm.Designer.cs">
-      <DependentUpon>SelectDatabaseForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="KeePassSupport.cs" />
-    <Compile Include="OptionsProvider_Registry.cs" />
-    <Compile Include="Forms\OptionsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\OptionsForm.Designer.cs">
-      <DependentUpon>OptionsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Interfaces\IOptionsProvider.cs" />
-    <Compile Include="MainInterface.cs" />
-    <Compile Include="Interfaces\IOnlineProvider.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="Providers\digitalbucket\AccountDetails.cs">
+    <Compile Update="Providers\digitalbucket\AccountDetails.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Providers\digitalbucket\AccountDetails.Designer.cs">
-      <DependentUpon>AccountDetails.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Providers\digitalbucket\main.cs" />
-    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\BasicResponse.cs" />
-    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\CustomResponse.cs" />
-    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\DigitalBucketConnection.cs" />
-    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\File.cs" />
-    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\Folder.cs" />
-    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\Response.cs" />
-    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\Result.cs" />
-    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\SharedFolder.cs" />
-    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\StreamResponse.cs" />
-    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\TagCollection.cs" />
-    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\Utils.cs" />
-    <Compile Include="Providers\S3\AccountDetails.cs">
+    <Compile Update="Providers\S3\AccountDetails.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Providers\S3\AccountDetails.designer.cs">
-      <DependentUpon>AccountDetails.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Providers\S3\S3Provider.cs" />
-    <Compile Include="Providers\SFTP\AccountDetails.cs">
+    <Compile Update="Providers\SFTP\AccountDetails.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Providers\SFTP\AccountDetails.Designer.cs">
-      <DependentUpon>AccountDetails.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Providers\SFTP\main.cs" />
-    <Compile Include="Util.cs" />
-    <Compile Include="Web References\AmazonS3\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.map</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Forms\AccountEntryGenerator.resx">
-      <DependentUpon>AccountEntryGenerator.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\OpenDbForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>OpenDbForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\OpenForm.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>OpenForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SelectDatabaseForm.resx">
-      <DependentUpon>SelectDatabaseForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\OptionsForm.resx">
-      <DependentUpon>OptionsForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Providers\digitalbucket\AccountDetails.resx">
-      <DependentUpon>AccountDetails.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Providers\S3\AccountDetails.resx">
-      <DependentUpon>AccountDetails.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Providers\SFTP\AccountDetails.resx">
-      <DependentUpon>AccountDetails.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <Compile Remove="Options_Registry.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Resources\Icons\Img_48x48_Sync.png" />
-    <None Include="Web References\AmazonS3\AccessControlPolicy.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\AmazonS3\AmazonS3.wsdl" />
-    <None Include="Web References\AmazonS3\AmazonS3.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Web References\AmazonS3\BucketLoggingStatus.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\AmazonS3\CopyObjectResult.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\AmazonS3\CreateBucketResult.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\AmazonS3\GetObjectResult.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\AmazonS3\ListAllMyBucketsResult.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\AmazonS3\ListBucketResult.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\AmazonS3\PutObjectResult.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\AmazonS3\Reference.map">
-      <Generator>MSDiscoCodeGenerator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <None Include="Web References\AmazonS3\Status.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\Img_16x16_Open.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\Img_16x16_Options.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\Img_16x16_Plugin.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\Img_16x16_Sync.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\Img_48x48_Open.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icons\Img_48x48_Password.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <WebReferences Include="Web References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WebReferenceUrl Include="http://doc.s3.amazonaws.com/2006-03-01/AmazonS3.wsdl">
-      <UrlBehavior>Dynamic</UrlBehavior>
-      <RelPath>Web References\AmazonS3\</RelPath>
-      <UpdateFromURL>http://doc.s3.amazonaws.com/2006-03-01/AmazonS3.wsdl</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
-      <CachedSettingsPropName>KeePassSync_AmazonS3_AmazonS3</CachedSettingsPropName>
-    </WebReferenceUrl>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <PropertyGroup>
-  </PropertyGroup>
 </Project>

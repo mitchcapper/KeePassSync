@@ -9,84 +9,63 @@ using System.Text;
 using System.Net;
 using System.Xml.Serialization;
 
-namespace digitalbucket.net.rest
-{
-    public abstract class Response
-    {
-        protected HttpWebResponse response = null;
-        
-        public Response(HttpWebRequest request)
-        {
-            try
-            {
-                response = request.GetResponse() as HttpWebResponse;
+namespace digitalbucket.net.rest {
+	public abstract class Response {
+		protected HttpWebResponse response = null;
 
-                // this means that we got 200 - OK as reposne and we may get more detail   
-                _success = true;
-                _statusCode = 200;
+		public Response(HttpWebRequest request) {
+			try {
+				response = request.GetResponse() as HttpWebResponse;
 
-                if (response != null && !String.IsNullOrEmpty(response.StatusDescription))
-                {
-                    _statusDescription = response.StatusDescription;
-                }
-                else
-                {
-                    _statusDescription = "Operation done successfully";
-                }
-            }
-            catch (WebException wex)
-            {
-                _success = false;
+				// this means that we got 200 - OK as reposne and we may get more detail   
+				_success = true;
+				_statusCode = 200;
 
-                if (wex.Response != null)
-                {
-                    using (HttpWebResponse errorResponse = (HttpWebResponse)wex.Response)
-                    {
-                        XmlSerializer serializer = new XmlSerializer(typeof(Error));
-                        Error err = (Error)serializer.Deserialize(errorResponse.GetResponseStream());
+				if (response != null && !String.IsNullOrEmpty(response.StatusDescription)) {
+					_statusDescription = response.StatusDescription;
+				} else {
+					_statusDescription = "Operation done successfully";
+				}
+			} catch (WebException wex) {
+				_success = false;
 
-                        if (err != null)
-                        {
-                            _statusCode = err.Code;
-                            _statusDescription = err.Message;
-                        }
-                        else
-                        {
-                            _statusDescription = wex.Message;
-                        }
-                    }
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            catch (Exception ex)
-            {
-                _success = false;
-                _statusDescription = ex.Message;
-            }
-        }
+				if (wex.Response != null) {
+					using (HttpWebResponse errorResponse = (HttpWebResponse)wex.Response) {
+						XmlSerializer serializer = new XmlSerializer(typeof(Error));
+						Error err = (Error)serializer.Deserialize(errorResponse.GetResponseStream());
 
-        protected bool _success;
-        public bool Success
-        {
-            get { return _success; }
-            set { _success = value; }
-        }
+						if (err != null) {
+							_statusCode = err.Code;
+							_statusDescription = err.Message;
+						} else {
+							_statusDescription = wex.Message;
+						}
+					}
+				} else {
+					throw;
+				}
+			} catch (Exception ex) {
+				_success = false;
+				_statusDescription = ex.Message;
+			}
+		}
 
-        protected int _statusCode;
-        public int StatusCode
-        {
-            get { return _statusCode; }
-            set { _statusCode = value; }
-        }
+		protected bool _success;
+		public bool Success {
+			get { return _success; }
+			set { _success = value; }
+		}
 
-        protected string _statusDescription;
-        public string StatusDescription
-        {
-            get { return _statusDescription; }
-            set { _statusDescription = value; }
-        }
-    }   
+		protected int _statusCode;
+		public int StatusCode {
+			get { return _statusCode; }
+			set { _statusCode = value; }
+		}
+
+		protected string _statusDescription;
+		public string StatusDescription {
+			get { return _statusDescription; }
+			set { _statusDescription = value; }
+		}
+	}
 }

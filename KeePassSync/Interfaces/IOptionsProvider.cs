@@ -17,32 +17,30 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-namespace KeePassSync
-{
-    /// <summary>
-    /// Interface for the Options provider.  This is an interface so that it's easily
-    /// able to be switched from one implementation to another.  Currently the only
-    /// implementation is using the registry to store the options.
-    /// </summary>
-    public interface IOptionsProvider
-    {
-        /// <summary>
-        /// This method stores the main plugin interface so that subsequent reads/writes
-        /// have access to the one and only options object.
-        /// </summary>
-        /// <param name="mainInterface">Main plugin interface.</param>
-        void Initialize(KeePassSyncExt mainInterface);
+namespace KeePassSync {
+	/// <summary>
+	/// Interface for the Options provider.  This is an interface so that it's easily
+	/// able to be switched from one implementation to another.  Currently the only
+	/// implementation is using the registry to store the options.
+	/// </summary>
+	public interface IOptionsProvider {
+		/// <summary>
+		/// This method stores the main plugin interface so that subsequent reads/writes
+		/// have access to the one and only options object.
+		/// </summary>
+		/// <param name="mainInterface">Main plugin interface.</param>
+		void Initialize(KeePassSyncExt mainInterface);
 
-        /// <summary>
-        /// Reads option information from local store and puts into main interface's options object.
-        /// </summary>
-        /// <returns></returns>
-        bool Read( OptionsData mainOptions );
-        
-        /// <summary>
-        /// Writes the options from the main interface to local store.
-        /// </summary>
-        /// <returns></returns>
-        bool Write( OptionsData mainOptions );
-    }
+		/// <summary>
+		/// Reads option information from local store and puts into main interface's options object.
+		/// </summary>
+		/// <returns></returns>
+		bool Read(OptionsData mainOptions);
+
+		/// <summary>
+		/// Writes the options from the main interface to local store.
+		/// </summary>
+		/// <returns></returns>
+		bool Write(OptionsData mainOptions);
+	}
 }

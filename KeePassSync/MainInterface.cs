@@ -209,8 +209,7 @@ namespace KeePassSync {
 				if (!m_OptionsProvider.Read(m_OptionsData)) {
 					SetStatus(StatusPriority.eStatusBar, Properties.Resources.Str_ErrOptions);
 				}
-			}
-			catch {
+			} catch {
 				SetStatus(StatusPriority.eMessageBoxFatal, Properties.Resources.Str_ErrExceptionOptions);
 				return false;
 			}
@@ -291,8 +290,7 @@ namespace KeePassSync {
 				try {
 					provider.Initialize(this);
 					m_OnlineProviders.Add(provider.Key, provider);
-				}
-				catch {
+				} catch {
 					SetStatus(StatusPriority.eStatusBar, Properties.Resources.Str_ErrProviderInitialization.Replace("%1", provider.Name));
 				}
 			}
@@ -306,8 +304,7 @@ namespace KeePassSync {
 					try {
 						if (!OnlineProvider.IsInitialized)
 							OnlineProvider.Initialize(this);
-					}
-					catch {
+					} catch {
 						SetStatus(StatusPriority.eMessageBoxInfo, Properties.Resources.Str_ErrProviderInitialization.Replace("%1", OnlineProvider.Name));
 						SetStatus(StatusPriority.eStatusBar, Properties.Resources.Str_ErrProviderInitialization.Replace("%1", OnlineProvider.Name));
 						return;
@@ -321,14 +318,11 @@ namespace KeePassSync {
 						if (err == KeePassSyncErr.Error) {
 							tryEdit = true;
 							msg = Properties.Resources.Str_ErrValidatingOptions_Error;
-						}
-						else if (err == KeePassSyncErr.Timeout) {
+						} else if (err == KeePassSyncErr.Timeout) {
 							msg = Properties.Resources.Str_ErrValidatingOptions_Timeout;
-						}
-						else if (err == KeePassSyncErr.NotConnected) {
+						} else if (err == KeePassSyncErr.NotConnected) {
 							msg = Properties.Resources.Str_ErrValidatingOptions_NotConnected;
-						}
-						else if (err == KeePassSyncErr.None) {
+						} else if (err == KeePassSyncErr.None) {
 							m_ValidOnlineOptions = true;
 							break;
 						}
@@ -346,20 +340,17 @@ namespace KeePassSync {
 							if (res == DialogResult.Yes) {
 								if (tryEdit)
 									OnlineProvider.EditEntry(m_OptionsData.PasswordEntry);
-							}
-							else {
+							} else {
 								m_ValidOnlineOptions = false;
 								break;
 							}
 						}
 					}
 
-				}
-				else {
+				} else {
 					SetStatus(StatusPriority.eStatusBar, Properties.Resources.Str_ErrNoProviderSelected);
 				}
-			}
-			catch {
+			} catch {
 				SetStatus(StatusPriority.eMessageBoxInfo, Properties.Resources.Str_ErrOptions);
 				m_ValidOnlineOptions = false;
 			}
@@ -457,22 +448,18 @@ namespace KeePassSync {
 							// TODO - delete more securely
 							File.Delete(serialinfo.Path);
 							thread_MainWindow_UpdateUI(false, null, true, true, true, null, db.Modified);
-						}
-						catch (Exception e) {
+						} catch (Exception e) {
 							SetStatus(StatusPriority.eMessageBox, e.Message);
 							ret = KeePassSyncErr.Error;
 						}
-					}
-					else {
+					} else {
 						SetStatus(StatusPriority.eStatusBar, "Database not online, stored current database.");
 					}
-				}
-				else {
+				} else {
 					SetStatus(StatusPriority.eStatusBar, "Invalid online provider options");
 					ret = KeePassSyncErr.InvalidCredentials;
 				}
-			}
-			catch {
+			} catch {
 				SetStatus(StatusPriority.eStatusBar, "Unable to sync (export) database.");
 				ret = KeePassSyncErr.Error;
 			}
@@ -537,8 +524,7 @@ namespace KeePassSync {
 					else
 						SetStatus(StatusPriority.eStatusBar, Properties.Resources.Str_Synced.Replace("%1", provider_name));
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				MessageBox.Show(e.Message + "\r\n" + e.StackTrace);
 				Debugger.Launch();
 			}
@@ -594,13 +580,11 @@ namespace KeePassSync {
 					KeePassSyncErr status = OnlineProvider.GetFile(m_OptionsData.PasswordEntry, onlineFilename, newLocation);
 					if (status == KeePassSyncErr.None) {
 						ret = true;
-					}
-					else {
+					} else {
 						newLocation = null;
 					}
 				}
-			}
-			catch {
+			} catch {
 				SetStatus(StatusPriority.eStatusBar, Properties.Resources.Str_ErrSync);
 			}
 
@@ -639,17 +623,14 @@ namespace KeePassSync {
 							if (databases == null) {
 								SetStatus(StatusPriority.eMessageBoxInfo, "No databases found.");
 							}
-						}
-						catch {
+						} catch {
 							SetStatus(StatusPriority.eMessageBoxInfo, Properties.Resources.Str_ErrRetrieveDatabase);
 						}
-					}
-					else {
+					} else {
 						SetStatus(StatusPriority.eMessageBoxInfo, "Temp entry couldn't be created.");
 					}
 				}
-			}
-			catch {
+			} catch {
 				SetStatus(StatusPriority.eMessageBoxInfo, Properties.Resources.Str_ErrOpenDatabase);
 			}
 
@@ -669,8 +650,7 @@ namespace KeePassSync {
 							break;
 					}
 				}
-			}
-			catch {
+			} catch {
 				SetStatus(StatusPriority.eMessageBoxInfo, Properties.Resources.Str_ErrOpenDatabase);
 			}
 
@@ -702,11 +682,9 @@ namespace KeePassSync {
 						// For some reason, we don't get a KeePass notification of file opened here
 						m_ValidDatabase = true;
 						ValidDatabaseChanged(this, new EventArgs());
-					}
-					catch (KeePassLib.Keys.InvalidCompositeKeyException e) {
+					} catch (KeePassLib.Keys.InvalidCompositeKeyException e) {
 						SetStatus(StatusPriority.eMessageBox, e.Message);
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						SetStatus(StatusPriority.eMessageBox, e.Message);
 						break;
 					}
@@ -754,11 +732,9 @@ namespace KeePassSync {
 							// We just changed the options, time to save them
 							m_OptionsProvider.Write(m_OptionsData);
 
-						}
-						catch (UnauthorizedAccessException) {
+						} catch (UnauthorizedAccessException) {
 							SetStatus(StatusPriority.eMessageBoxFatal, "You cannot create a database in " + dlg.SelectedPath);
-						}
-						catch (Exception e) {
+						} catch (Exception e) {
 							SetStatus(StatusPriority.eMessageBox, e.Message);
 						}
 						break;
@@ -832,13 +808,11 @@ namespace KeePassSync {
 					if (ret != KeePassSyncErr.None) {
 						SetStatus(StatusPriority.eStatusBar, "Unable to save the database.");
 					}
-				}
-				else {
+				} else {
 					SetStatus(StatusPriority.eStatusBar, "Invalid online provider options.");
 					ret = KeePassSyncErr.InvalidCredentials;
 				}
-			}
-			catch {
+			} catch {
 				SetStatus(StatusPriority.eStatusBar, "Unable to sync (export) database.");
 				ret = KeePassSyncErr.Error;
 			}

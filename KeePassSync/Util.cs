@@ -21,29 +21,22 @@ using System;
 using System.Collections;
 using System.Reflection;
 using System.IO;
-namespace KeePassSync
-{
-	public class Util
-	{
-		public static class HexStringConverter
-		{
-			public static byte[] ToByteArray(String HexString)
-			{
+namespace KeePassSync {
+	public class Util {
+		public static class HexStringConverter {
+			public static byte[] ToByteArray(String HexString) {
 				int NumberChars = HexString.Length;
 				byte[] bytes = new byte[NumberChars / 2];
-				for (int i = 0; i < NumberChars; i += 2)
-				{
+				for (int i = 0; i < NumberChars; i += 2) {
 					bytes[i / 2] = Convert.ToByte(HexString.Substring(i, 2), 16);
 				}
 				return bytes;
 			}
 
-			public static String ToHexArray(byte[] bytes)
-			{
+			public static String ToHexArray(byte[] bytes) {
 				char[] c = new char[bytes.Length * 2];
 				byte b;
-				for (int y = 0, x = 0; y < bytes.Length; ++y, ++x)
-				{
+				for (int y = 0, x = 0; y < bytes.Length; ++y, ++x) {
 					b = ((byte)(bytes[y] >> 4));
 					c[x] = (char)(b > 9 ? b + 0x37 : b + 0x30);
 					b = ((byte)(bytes[y] & 0xF));
@@ -53,36 +46,31 @@ namespace KeePassSync
 			}
 		}
 
-		private static IOnlineProvider init_provider(IOnlineProvider provider, string Path)
-		{
+		private static IOnlineProvider init_provider(IOnlineProvider provider, string Path) {
 			provider.Path = Path;
 			return provider;
 		}
 
-		public static IOnlineProvider[] DiscoverProviders()
-		{
+		public static IOnlineProvider[] DiscoverProviders() {
 			ArrayList providers = new ArrayList();
 			string[] ignoreDlls = { //primarily old versions 
                 "KeePassSync_FTP.dll",
 				"KeePassSync_S3.dll",
 				"KeePassSync.dll",
 				"KeePassSync_digitalBucket.net.dll"
-                };
+				};
 
 			providers.Add(init_provider(new Providers.DigitalBucket.CDigitalbucket(), "DigitalBucket"));
 			providers.Add(init_provider(new Providers.S3.S3Provider(), "S3"));
 			providers.Add(init_provider(new Providers.SFTP.FtpProvider(), "SFTP"));
 			// Search through the directory for DLLs
 
-			foreach (string filename in Directory.GetFiles(KeePassSyncExt.PluginDirectory, "*.dll"))
-			{
+			foreach (string filename in Directory.GetFiles(KeePassSyncExt.PluginDirectory, "*.dll")) {
 				if (!filename.StartsWith("KeePassSync", StringComparison.CurrentCultureIgnoreCase))
 					continue;
 				bool skip = false;
-				foreach (string ignore in ignoreDlls)
-				{
-					if (filename.ToLower().EndsWith(ignore.ToLower()))
-					{
+				foreach (string ignore in ignoreDlls) {
+					if (filename.ToLower().EndsWith(ignore.ToLower())) {
 						skip = true;
 						break;
 					}
@@ -99,21 +87,15 @@ namespace KeePassSync
 			return (IOnlineProvider[])providers.ToArray(typeof(IOnlineProvider));
 		}
 
-		public static IOnlineProvider LoadOnlineProvider(string providerPath)
-		{
+		public static IOnlineProvider LoadOnlineProvider(string providerPath) {
 			IOnlineProvider provider = null;
-			try
-			{
+			try {
 				Assembly asm = Assembly.LoadFrom(providerPath);
-				if (asm != null)
-				{
+				if (asm != null) {
 					Type[] types = asm.GetTypes();
-					if (types != null)
-					{
-						for (int i = 0; i < types.Length; i++)
-						{
-							if (types[i].IsClass && !types[i].IsAbstract && types[i].BaseType.Name == "IOnlineProvider")
-							{
+					if (types != null) {
+						for (int i = 0; i < types.Length; i++) {
+							if (types[i].IsClass && !types[i].IsAbstract && types[i].BaseType.Name == "IOnlineProvider") {
 								object o = asm.CreateInstance(types[i].FullName);
 								provider = o as IOnlineProvider;
 								provider.Path = asm.Location;
@@ -122,9 +104,7 @@ namespace KeePassSync
 					}
 				}
 				return provider;
-			}
-			catch
-			{
+			} catch {
 				return null;
 			}
 		}

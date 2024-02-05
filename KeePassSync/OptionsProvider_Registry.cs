@@ -24,19 +24,15 @@ using KeePassLib;
 // For registry functions
 using Microsoft.Win32;
 
-namespace KeePassSync
-{
-	public class OptionsProvider_Registry : IOptionsProvider
-	{
+namespace KeePassSync {
+	public class OptionsProvider_Registry : IOptionsProvider {
 		private KeePassSyncExt m_MainInterface;
 
-		public void Initialize(KeePassSyncExt mainInterface)
-		{
+		public void Initialize(KeePassSyncExt mainInterface) {
 			m_MainInterface = mainInterface;
 		}
 
-		public bool Read(OptionsData mainOptions)
-		{
+		public bool Read(OptionsData mainOptions) {
 			string keyName = "Software\\KeePass Plugin\\" + Properties.Resources.Str_Title;
 
 			// Attempt to open the key
@@ -45,24 +41,20 @@ namespace KeePassSync
 			if (key == null)
 				key = Registry.CurrentUser.CreateSubKey(keyName);
 
-			if (key != null)
-			{
+			if (key != null) {
 				if (key.GetValue("MergeMethod") != null)
 					mainOptions.MergeMethod = (PwMergeMethod)(int)key.GetValue("MergeMethod");
 
 				if (key.GetValue("PreviousDatabaseLocation") != null)
 					mainOptions.PreviousDatabaseLocation = (string)key.GetValue("PreviousDatabaseLocation");
 
-				if (key.GetValue("OnlineProviderPath") != null)
-				{
+				if (key.GetValue("OnlineProviderPath") != null) {
 					string path = (string)key.GetValue("OnlineProviderPath");
 
 					// See if the provider set in the registry is available within KeePass
 					IOnlineProvider[] providers = Util.DiscoverProviders();
-					foreach (IOnlineProvider provider in providers)
-					{
-						if (is_the_provider(provider, path))
-						{
+					foreach (IOnlineProvider provider in providers) {
+						if (is_the_provider(provider, path)) {
 							mainOptions.OnlineProviderKey = provider.Key;
 							break;
 						}
@@ -72,8 +64,7 @@ namespace KeePassSync
 
 			return (key != null);
 		}
-		private bool is_the_provider(IOnlineProvider provider, String path)
-		{
+		private bool is_the_provider(IOnlineProvider provider, String path) {
 			if (provider.Path == path)
 				return true;
 			if (path.EndsWith("KeePassSync_FTP.dll", StringComparison.CurrentCultureIgnoreCase) && provider.Path == "SFTP")
@@ -85,8 +76,7 @@ namespace KeePassSync
 
 			return false;
 		}
-		public bool Write(OptionsData mainOptions)
-		{
+		public bool Write(OptionsData mainOptions) {
 			string keyName = "Software\\KeePass Plugin\\" + Properties.Resources.Str_Title;
 
 			// Attempt to open the key
@@ -96,8 +86,7 @@ namespace KeePassSync
 			if (key == null)
 				key = Registry.CurrentUser.CreateSubKey(keyName);
 
-			if (key != null)
-			{
+			if (key != null) {
 				key.SetValue("MergeMethod", (int)mainOptions.MergeMethod);
 
 				if (mainOptions.PreviousDatabaseLocation != null)
