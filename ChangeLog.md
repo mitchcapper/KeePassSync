@@ -1,9 +1,17 @@
+2016-04-01: v7.1
+- Amazon S3 updated to use SDK
+- Project style changed and updated
+- DigitalBucket removed (adios)
+- Added update checks
+- Project migrated to GitHub and git
+
+
 2016-04-01: v6.10
--Unreleased, get databases in S3, minor other S3 updates, migration to .net 4.5
+- Unreleased, get databases in S3, minor other S3 updates, migration to .net 4.5
 
 2012-01-16: v6.0
--Compat with keepass 2.18 and higher
--S3 permission preservation
+- Compat with keepass 2.18 and higher
+- S3 permission preservation
 
 2009-03-10: v2.11
 - Plugin distributed as PLGX rather than dll

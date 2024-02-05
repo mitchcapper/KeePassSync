@@ -186,6 +186,12 @@ namespace KeePassSync {
 		}
 		#endregion
 
+		public override string UpdateUrl {
+			get {
+				return "http://mitchcapper.com/keepass_versions.txt?KPS&KPV=" + PwDefs.VersionString;
+			}
+		}
+
 		// The Initialize function is the most important one and you probably will always 
 		// override it. In this function, you get an interface to the KeePass internals: 
 		// an IPluginHost interface reference. By using this interface, you can access the 
