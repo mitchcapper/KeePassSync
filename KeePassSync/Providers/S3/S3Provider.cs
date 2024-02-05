@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography;
-using System.Text;
 using System.Windows.Forms;
 using KeePassLib;
 using KeePassLib.Security;
-using KeePassSync.AmazonS3;
+using Amazon.S3;
+using Amazon.S3.Model;
+using Amazon.S3.Util;
+
 
 namespace KeePassSync.Providers.S3 {
 
@@ -19,7 +20,7 @@ namespace KeePassSync.Providers.S3 {
 		private AccountDetails m_UserControl;
 		#endregion
 
-		private const string access_key_field = PwDefs.UserNameField;
+		private const string access_key_id_field = PwDefs.UserNameField;
 		private const string bucket_name_field = PwDefs.UrlField;
 		private const string create_backups_field = "create_backups";
 
@@ -37,7 +38,7 @@ namespace KeePassSync.Providers.S3 {
 			return ret;
 		}
 		public override void DecodeEntry(PwEntry entry) {
-			m_UserControl.AccessKey = read_PwEntry_string(entry, access_key_field);
+			m_UserControl.AccessKey = read_PwEntry_string(entry, access_key_id_field);
 			m_UserControl.SecretAccessKey = read_PwEntry_string(entry, secret_access_key_field);
 			m_UserControl.BucketName = read_PwEntry_string(entry, bucket_name_field);
 			String backup_str = read_PwEntry_string(entry, create_backups_field);
@@ -48,7 +49,7 @@ namespace KeePassSync.Providers.S3 {
 		}
 
 		public override void EncodeEntry(PwEntry entry) {
-			write_PwEntry_string(entry, access_key_field, m_UserControl.AccessKey, false);
+			write_PwEntry_string(entry, access_key_id_field, m_UserControl.AccessKey, false);
 			write_PwEntry_string(entry, secret_access_key_field, m_UserControl.SecretAccessKey, memprotect_secret_access_key);
 			write_PwEntry_string(entry, bucket_name_field, m_UserControl.BucketName, false);
 			write_PwEntry_string(entry, create_backups_field, m_UserControl.CreateBackups ? "true" : "false", false);
@@ -68,7 +69,7 @@ namespace KeePassSync.Providers.S3 {
 			AccountDetails old_details = m_UserControl;
 			m_UserControl = new AccountDetails();
 			DecodeEntry(entry);
-			ret = verify_bucket_or_create(m_UserControl.BucketName);
+			ret = verify_bucket_or_create(BucketName);
 			m_UserControl = old_details;
 			return ret;
 		}
@@ -89,121 +90,103 @@ namespace KeePassSync.Providers.S3 {
 				return GetDatabases(m_OptionData.PasswordEntry);
 			}
 		}
+		private AmazonS3Client GetClient() {
+
+			return new AmazonS3Client(m_UserControl.AccessKey, m_UserControl.SecretAccessKey, new AmazonS3Config { ServiceURL = "https://s3.amazonaws.com" });
+		}
 		public override KeePassSyncErr PutFile(PwEntry entry, string remoteFilename, string localFilename) {
 			try {
 				DecodeEntry(entry);
-				BinaryReader reader = new BinaryReader(File.OpenRead(localFilename));
-				byte[] data = new byte[reader.BaseStream.Length];
-				reader.Read(data, 0, data.Length);
-				reader.Close();
-				KeePassSyncErr err = verify_bucket_or_create(m_UserControl.BucketName);
-				if (err != KeePassSyncErr.None)
-					return err;
-				DateTime stamp;
-				String sig;
-				if ((m_UserControl.CreateBackups) && fileExists(remoteFilename)) {
-					string backupFilename = remoteFilename + ".bkup_day" + DateTime.Today.Day;
+				using (var fs = File.OpenRead(localFilename)) {
+					KeePassSyncErr err = verify_bucket_or_create(BucketName);
+					if (err != KeePassSyncErr.None)
+						return err;
 
-					GenerateSigElements("CopyObject", out stamp, out sig);
-					client.CopyObject(m_UserControl.BucketName, remoteFilename, m_UserControl.BucketName, backupFilename,
-									  MetadataDirective.COPY, true, null, null, System.DateTime.MinValue, false,
-									  System.DateTime.MinValue, false, null, null, StorageClass.STANDARD, false,
-									  m_UserControl.AccessKey, stamp, true, sig, null);
+					var client = GetClient();
+					S3AccessControlList acl = null;
+					if (FileExists(remoteFilename)) {
+						string backupFilename = remoteFilename + ".bkup_day" + DateTime.Today.Day;
+						acl = client.GetACL(new GetACLRequest() { BucketName = BucketName, Key = remoteFilename }).AccessControlList;
+						if (m_UserControl.CreateBackups)
+							client.CopyObject(BucketName, remoteFilename, BucketName, backupFilename);
+
+
+					}
+					var hash = GetSHA1(fs); //s3 will auto seek to start on stream after
+					client.PutObject(new PutObjectRequest { BucketName = BucketName, Key = remoteFilename, InputStream = fs, AutoCloseStream = false, ChecksumSHA1 = hash });
+					if (acl != null) {
+						try {
+							client.PutACL(new PutACLRequest { BucketName = BucketName, Key = remoteFilename, AccessControlList = acl });
+						} catch (AmazonS3Exception s3e) {
+							if (s3e.ErrorCode != "AccessControlListNotSupported")
+								throw s3e;
+						}
+					}
+
+
 				}
-				Grant[] acl = null;
-				if (fileExists(remoteFilename)) {
-					GenerateSigElements("GetObjectAccessControlPolicy", out stamp, out sig);
-					AccessControlPolicy policy = client.GetObjectAccessControlPolicy(m_UserControl.BucketName, remoteFilename,
-																					 m_UserControl.AccessKey, stamp, true, sig, null);
-					acl = policy.AccessControlList;
-				}
-
-
-				GenerateSigElements("PutObjectInline", out stamp, out sig);
-				PutObjectResult result = client.PutObjectInline(m_UserControl.BucketName, remoteFilename, null, data, data.Length, acl, StorageClass.STANDARD, true, m_UserControl.AccessKey, stamp, true, sig, null);
-				if (result == null)
-					throw new Exception("Put File Failed");
-
-				string hash = get_md5(data);
-				if (hash != result.ETag)
-					throw new Exception("File uploaded but our hash of: " + hash + " does not match server hash of: " + result.ETag);
 			} catch (Exception e) {
 				return convert_exception(e);
 			}
 			return KeePassSyncErr.None;
 		}
+		private string GetSHA1(Stream stream) {
+			using (var sha1 = SHA1.Create()) {
+				return Convert.ToBase64String(sha1.ComputeHash(stream));
+			}
+
+		}
 		public override UserControl GetUserControl() {
 			return m_UserControl;
 		}
 		public override string[] GetDatabases(PwEntry entry) {
-			DateTime stamp;
-			String sig;
-			const int MaxKeys = 50;
-			string Marker = null;
-			const string Delimiter = "/";
-
+			var client = GetClient();
 			DecodeEntry(entry);
 			List<string> databases = new List<string>();
-			while (true) {
-				GenerateSigElements("ListBucket", out stamp, out sig);
-				var result = client.ListBucket(m_UserControl.BucketName, "", Marker, MaxKeys, true, Delimiter, m_UserControl.AccessKey, stamp, true, sig, null);
-				if (result == null)
-					throw new Exception("Bucket not found");
-				if (result.Contents != null) {
-					foreach (ListEntry e in result.Contents) {
-						if (e.Key.EndsWith(".kdbx"))
-							databases.Add(e.Key);
-					}
-				}
-				// If all of the results have been examined, stop
-				if (!result.IsTruncated)
-					break;
-				Marker = result.NextMarker;
-				if (Marker == null)
-					break;
+			var files = client.ListObjectsV2(new ListObjectsV2Request { BucketName = BucketName });
+			foreach (var file in files.S3Objects) {
+				if (file.Key.EndsWith(".kdbx"))
+					databases.Add(file.Key);
 			}
 			return databases.ToArray();
 		}
-		private string get_md5(byte[] data) {
-			MD5 md5 = new MD5CryptoServiceProvider();
 
-			return "\"" + BitConverter.ToString(md5.ComputeHash(data)).Replace("-", "").ToLower() + "\"";
-		}
-		private bool fileExists(string key) {
-			DateTime stamp;
-			String sig;
-			bool result = false;
-			GenerateSigElements("GetObject", out stamp, out sig);
+		private bool FileExists(string filename) {
+
+			var client = GetClient();
 			try {
-				GetObjectResult cur_item = client.GetObject(m_UserControl.BucketName, key, false, false, false, m_UserControl.AccessKey, stamp, true, sig, null);
-				if (cur_item != null)
-					result = true;
-			} catch (System.Web.Services.Protocols.SoapException e) {
-				if (e.Message != "The specified key does not exist.")
-					throw e;
+				var meta = client.GetObjectMetadata(BucketName, filename);
+				return true;
+			} catch (AmazonS3Exception s3) {
+				if (s3.StatusCode != HttpStatusCode.NotFound)
+					throw s3;
+				return false;
 			}
-			return result;
 		}
-
+		public string BucketName => m_UserControl.BucketName?.ToLower();
 		public override KeePassSyncErr GetFile(PwEntry entry, string remoteFilename, string localFilename) {
 			DecodeEntry(entry);
+			var client = GetClient();
 			try {
-				verify_bucket_or_create(m_UserControl.BucketName);
+				verify_bucket_or_create(BucketName);
+				var obj = client.GetObject(new GetObjectRequest {BucketName = BucketName, Key = remoteFilename,ChecksumMode = ChecksumMode.ENABLED });
+				using (var memStream = new MemoryStream()) {
+					using (var resp = obj.ResponseStream) {
+						resp.CopyTo(memStream);
+					}
+					memStream.Seek(0, SeekOrigin.Begin);
+					var hash = GetSHA1(memStream);
+					if (!obj.ChecksumSHA1.Equals(hash, StringComparison.OrdinalIgnoreCase))
+						throw new Exception($"File downloaded but our hash of: {hash} does not match server hash of: {obj.ChecksumSHA1}");
 
-				DateTime stamp;
-				String sig;
-				GenerateSigElements("GetObject", out stamp, out sig);
-				GetObjectResult result = client.GetObject(m_UserControl.BucketName, remoteFilename, false, true, true, m_UserControl.AccessKey, stamp, true, sig, null);
-				if (result == null || result.Data == null)
-					return KeePassSyncErr.FileNotFound;
-				byte[] data = result.Data;
-				string hash = get_md5(data);
-				if (hash != result.ETag)
-					throw new Exception("File downloaded but our hash of: " + hash + " does not match server hash of: " + result.ETag);
-				BinaryWriter writer = new BinaryWriter(File.OpenWrite(localFilename));
-				writer.Write(data);
-				writer.Close();
+					using (var fs = File.OpenWrite(localFilename)) {
+						memStream.Seek(0, SeekOrigin.Begin);
+						memStream.CopyTo(fs);
+					}
+				}
 			} catch (Exception e) {
+				if (e.Message == "The specified key does not exist.")
+					return KeePassSyncErr.FileNotFound;
 				return convert_exception(e);
 			}
 			return KeePassSyncErr.None;
@@ -220,6 +203,14 @@ namespace KeePassSync.Providers.S3 {
 			string msg;
 			StatusPriority priority = StatusPriority.eMessageBoxFatal;
 			switch (e.Message) {
+				case "The specified bucket is not valid.":
+					ret = KeePassSyncErr.Error;
+					msg = "Unable to access or create the bucket, make sure bucketname is only lowercase characters and numbers and that you own it (if it exists) min 3 chars max 63";
+					break;
+				case "Access Denied":
+					ret = KeePassSyncErr.Error;
+					msg = "If the bucket exists, does the access key you are using have read/write access to it? if it doesn't exist do you have permissions with this access key to create? If not create yourself";
+					break;
 				case "The specified key does not exist.":
 					ret = KeePassSyncErr.FileNotFound;
 					msg = "Tried to get file we could not find";
@@ -238,50 +229,15 @@ namespace KeePassSync.Providers.S3 {
 			m_MainInterface.SetStatus(priority, "KeyPassSync_S3: " + msg);
 			return ret;
 		}
-		private DateTime LocalNow() {
-			DateTime now = DateTime.Now;
-			return new DateTime(
-			now.Year, now.Month, now.Day,
-			now.Hour, now.Minute, now.Second,
-			now.Millisecond, DateTimeKind.Local);
-		}
+		
 
-		private string SignRequest(string secret, string operation, DateTime timestamp) {
-			HMACSHA1 hmac = new HMACSHA1(Encoding.UTF8.GetBytes(secret));
-			string isoTimeStamp = timestamp.ToUniversalTime().ToString(
-			"yyyy-MM-ddTHH:mm:ss.fffZ",
-			CultureInfo.InvariantCulture);
-			string signMe = "AmazonS3" + operation + isoTimeStamp;
-			string signature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(signMe)));
-			return signature;
-		}
-		private void GenerateSigElements(String command, out DateTime stamp, out string sig) {
-			stamp = LocalNow();
-			sig = SignRequest(m_UserControl.SecretAccessKey, command, stamp);
-
-		}
-		private AmazonS3.AmazonS3 client = new AmazonS3.AmazonS3();
 		private KeePassSyncErr verify_bucket_or_create(String bucket_name) {
 			try {
-				DateTime stamp;
-				String sig;
-				GenerateSigElements("ListAllMyBuckets", out stamp, out sig);
-				ListAllMyBucketsResult result = client.ListAllMyBuckets(m_UserControl.AccessKey, stamp, true, sig);
-				foreach (ListAllMyBucketsEntry bucket in result.Buckets) {
-					if (bucket.Name == bucket_name)
-						return KeePassSyncErr.None;
-				}
+				var client = GetClient();
+				if (!AmazonS3Util.DoesS3BucketExistV2(client, bucket_name))
+					client.PutBucket(bucket_name);
+				return KeePassSyncErr.None;
 
-				GenerateSigElements("CreateBucket", out stamp, out sig);
-				client.CreateBucket(bucket_name, null, m_UserControl.AccessKey, stamp, true, sig);
-
-				GenerateSigElements("ListAllMyBuckets", out stamp, out sig);
-				result = client.ListAllMyBuckets(m_UserControl.AccessKey, stamp, true, sig);
-				foreach (ListAllMyBucketsEntry bucket in result.Buckets) {
-					if (bucket.Name == bucket_name)
-						return KeePassSyncErr.None;
-				}
-				throw new Exception("Unable to find bucket, even after creating");
 			} catch (Exception e) {
 				return convert_exception(e);
 			}

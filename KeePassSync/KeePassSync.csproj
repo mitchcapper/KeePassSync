@@ -45,4 +45,7 @@
   <ItemGroup>
     <Compile Remove="Options_Registry.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.7.305.22" />
+  </ItemGroup>
 </Project>
