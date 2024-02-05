@@ -117,4 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="label6.Text" xml:space="preserve">
+    <value>1. This will launch the included Putty pscp.exe program for transfer.
+2. Database retieval using KeePassSync-&gt;Open will use plink.exe.
+3. pscp.exe doesn't like fully qualified paths, use relative paths to the home directory instead.
+4. Paths are most likely case sensitive.
+5. Debug mode enables verbose output from all commands and shows the command window rather than hiding it.</value>
+  </data>
 </root>

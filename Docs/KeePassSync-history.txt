@@ -1,5 +1,15 @@
-2009-03-10: v2.10.1
-- Fixed DigitalBucket New Database Initialization
+2012-01-16: v6.0
+-Compat with keepass 2.18 and higher
+-S3 permission preservation
+
+2009-03-10: v2.11
+- Plugin distributed as PLGX rather than dll
+- Moved stock providers to be inside of main project
+- Now compatible with old versions from 2.09 or higher
+
+
+2009-05-03: v2.10.1
+- DigitalBucket: Fixed New Database Initialization
 - SFTP: Added Key Authentication through option to use Paegent
 - SFTP: Command line arguments are now quoted so support spacing
 - SFTP: Added configurable timeout

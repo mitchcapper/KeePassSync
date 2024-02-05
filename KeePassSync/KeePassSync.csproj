@@ -11,14 +11,14 @@
     <RootNamespace>KeePassSync</RootNamespace>
     <AssemblyName>KeePassSync</AssemblyName>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>password.pfx</AssemblyOriginatorKeyFile>
+    
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -33,33 +33,40 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    
+    
+    
+    
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="KeePass, Version=2.0.9.99, Culture=neutral, PublicKeyToken=7952fc8ece49a093, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <ExecutableExtension>.exe</ExecutableExtension>
+    <Reference Include="KeePass, ">
       <HintPath>C:\KeePass Password Safe\KeePass.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -105,10 +112,49 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Providers\digitalbucket\AccountDetails.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Providers\digitalbucket\AccountDetails.Designer.cs">
+      <DependentUpon>AccountDetails.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Providers\digitalbucket\main.cs" />
+    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\BasicResponse.cs" />
+    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\CustomResponse.cs" />
+    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\DigitalBucketConnection.cs" />
+    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\File.cs" />
+    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\Folder.cs" />
+    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\Response.cs" />
+    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\Result.cs" />
+    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\SharedFolder.cs" />
+    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\StreamResponse.cs" />
+    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\TagCollection.cs" />
+    <Compile Include="Providers\digitalbucket\net.digitalbucket.rest\Utils.cs" />
+    <Compile Include="Providers\S3\AccountDetails.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Providers\S3\AccountDetails.designer.cs">
+      <DependentUpon>AccountDetails.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Providers\S3\S3Provider.cs" />
+    <Compile Include="Providers\SFTP\AccountDetails.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Providers\SFTP\AccountDetails.Designer.cs">
+      <DependentUpon>AccountDetails.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Providers\SFTP\main.cs" />
     <Compile Include="Util.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="password.pfx" />
+    <Compile Include="Web References\AmazonS3\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\AccountEntryGenerator.resx">
@@ -136,9 +182,61 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Providers\digitalbucket\AccountDetails.resx">
+      <DependentUpon>AccountDetails.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Providers\S3\AccountDetails.resx">
+      <DependentUpon>AccountDetails.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Providers\SFTP\AccountDetails.resx">
+      <DependentUpon>AccountDetails.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
+    <None Include="NoPassword.snk" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Resources\Icons\Img_48x48_Sync.png" />
+    <None Include="Web References\AmazonS3\AccessControlPolicy.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\AmazonS3\AmazonS3.wsdl" />
+    <None Include="Web References\AmazonS3\AmazonS3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Web References\AmazonS3\BucketLoggingStatus.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\AmazonS3\CopyObjectResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\AmazonS3\CreateBucketResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\AmazonS3\GetObjectResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\AmazonS3\ListAllMyBucketsResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\AmazonS3\ListBucketResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\AmazonS3\PutObjectResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\AmazonS3\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\AmazonS3\Status.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Icons\Img_16x16_Open.png" />
@@ -185,6 +283,23 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="http://doc.s3.amazonaws.com/2006-03-01/AmazonS3.wsdl">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\AmazonS3\</RelPath>
+      <UpdateFromURL>http://doc.s3.amazonaws.com/2006-03-01/AmazonS3.wsdl</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>KeePassSync_AmazonS3_AmazonS3</CachedSettingsPropName>
+    </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -194,6 +309,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)$(TargetFileName)" "C:\KeePass Password Safe\"</PostBuildEvent>
+    
   </PropertyGroup>
 </Project>

@@ -18,104 +18,115 @@
 */
 
 using System;
-using System.Collections.Generic;
 using System.Collections;
-using System.Text;
 using System.Reflection;
 using System.IO;
-
 namespace KeePassSync
 {
-    public class Util
-    {
-        public static class HexStringConverter
-        {
-            public static byte[] ToByteArray(String HexString)
-            {
-                int NumberChars = HexString.Length;
-                byte[] bytes = new byte[NumberChars / 2];
-                for (int i = 0; i < NumberChars; i += 2)
-                {
-                    bytes[i / 2] = Convert.ToByte(HexString.Substring(i, 2), 16);
-                }
-                return bytes;
-            }
+	public class Util
+	{
+		public static class HexStringConverter
+		{
+			public static byte[] ToByteArray(String HexString)
+			{
+				int NumberChars = HexString.Length;
+				byte[] bytes = new byte[NumberChars / 2];
+				for (int i = 0; i < NumberChars; i += 2)
+				{
+					bytes[i / 2] = Convert.ToByte(HexString.Substring(i, 2), 16);
+				}
+				return bytes;
+			}
 
-            public static String ToHexArray(byte[] bytes)
-            {
-                char[] c = new char[bytes.Length * 2];
-                byte b;
-                for (int y = 0, x = 0; y < bytes.Length; ++y, ++x)
-                {
-                    b = ((byte)(bytes[y] >> 4));
-                    c[x] = (char)(b > 9 ? b + 0x37 : b + 0x30);
-                    b = ((byte)(bytes[y] & 0xF));
-                    c[++x] = (char)(b > 9 ? b + 0x37 : b + 0x30);
-                }
-                return new string(c);
-            }
-        }
+			public static String ToHexArray(byte[] bytes)
+			{
+				char[] c = new char[bytes.Length * 2];
+				byte b;
+				for (int y = 0, x = 0; y < bytes.Length; ++y, ++x)
+				{
+					b = ((byte)(bytes[y] >> 4));
+					c[x] = (char)(b > 9 ? b + 0x37 : b + 0x30);
+					b = ((byte)(bytes[y] & 0xF));
+					c[++x] = (char)(b > 9 ? b + 0x37 : b + 0x30);
+				}
+				return new string(c);
+			}
+		}
 
+		private static IOnlineProvider init_provider(IOnlineProvider provider, string Path)
+		{
+			provider.Path = Path;
+			return provider;
+		}
 
+		public static IOnlineProvider[] DiscoverProviders()
+		{
+			ArrayList providers = new ArrayList();
+			string[] ignoreDlls = { //primarily old versions 
+                "KeePassSync_FTP.dll",
+				"KeePassSync_S3.dll",
+				"KeePassSync.dll",
+				"KeePassSync_digitalBucket.net.dll"
+                };
 
-        public static IOnlineProvider[] DiscoverProviders()
-        {
-            ArrayList providers = new ArrayList();
-            string[] ignoreDlls = {
-                "KeePassLibC32.dll",
-                "KeePassLibC64.dll",
-                "KeePassNtv32.dll",
-                "KeePassNtv64.dll" };
+			providers.Add(init_provider(new Providers.DigitalBucket.CDigitalbucket(), "DigitalBucket"));
+			providers.Add(init_provider(new Providers.S3.S3Provider(), "S3"));
+			providers.Add(init_provider(new Providers.SFTP.FtpProvider(), "SFTP"));
+			// Search through the directory for DLLs
 
-            // Search through the directory for DLLs
-            foreach ( string filename in Directory.GetFiles( KeePassSyncExt.PluginDirectory, "*.dll" ) )
-            {
-                bool skip = false;
-                foreach ( string ignore in ignoreDlls )
-                {
-                    if ( filename.ToLower().EndsWith( ignore.ToLower() ) )
-                    {
-                        skip = true;
-                        break;
-                    }
-                }
+			foreach (string filename in Directory.GetFiles(KeePassSyncExt.PluginDirectory, "*.dll"))
+			{
+				if (!filename.StartsWith("KeePassSync", StringComparison.CurrentCultureIgnoreCase))
+					continue;
+				bool skip = false;
+				foreach (string ignore in ignoreDlls)
+				{
+					if (filename.ToLower().EndsWith(ignore.ToLower()))
+					{
+						skip = true;
+						break;
+					}
+				}
 
-                if ( !skip )
-                {
-                    // Test to see if the DLL contains a valid interface
-                    IOnlineProvider provider = Util.LoadOnlineProvider( filename );
-                    if ( provider != null )
-                    {
-                        providers.Add( provider );
-                    }
-                }
-            }
+				if (skip)
+					continue;
 
-            return (IOnlineProvider[])providers.ToArray( typeof( IOnlineProvider ) );
-        }
+				IOnlineProvider provider = Util.LoadOnlineProvider(filename);
+				if (provider != null)
+					providers.Add(provider);
+			}
 
-        public static IOnlineProvider LoadOnlineProvider( string providerPath )
-        {
-            IOnlineProvider provider = null;
+			return (IOnlineProvider[])providers.ToArray(typeof(IOnlineProvider));
+		}
 
-            Assembly asm = Assembly.LoadFrom( providerPath );
-            if ( asm != null )
-            {
-                Type[] types = asm.GetTypes();
-                if ( types != null )
-                {
-                    for ( int i = 0; i < types.Length; i++ )
-                    {
-                        if ( types[i].IsClass && !types[i].IsAbstract && types[i].BaseType.Name == "IOnlineProvider" )
-                        {
-                            object o = asm.CreateInstance( types[i].FullName );
-                            provider = o as IOnlineProvider;
-                            provider.Path = asm.Location;
-                        }
-                    }
-                }
-            }
-            return provider;
-        }
-    }
+		public static IOnlineProvider LoadOnlineProvider(string providerPath)
+		{
+			IOnlineProvider provider = null;
+			try
+			{
+				Assembly asm = Assembly.LoadFrom(providerPath);
+				if (asm != null)
+				{
+					Type[] types = asm.GetTypes();
+					if (types != null)
+					{
+						for (int i = 0; i < types.Length; i++)
+						{
+							if (types[i].IsClass && !types[i].IsAbstract && types[i].BaseType.Name == "IOnlineProvider")
+							{
+								object o = asm.CreateInstance(types[i].FullName);
+								provider = o as IOnlineProvider;
+								provider.Path = asm.Location;
+							}
+						}
+					}
+				}
+				return provider;
+			}
+			catch
+			{
+				return null;
+			}
+		}
+	}
 }

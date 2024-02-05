@@ -1,8 +1,0 @@
-download putty
-install tortoisesvn
-in the tortoisesvn settings, under network, change the ssh client to putty.exe
-create c:\projects\keepasssync folder
-right click on the keepasssync folder and select tortoisesvn->import
-use https://keepasssync.svn.sourceforge.net/svnroot/keepasssync as the url
-type in the SF username/password
-go into the keepasssync folder and select tortoisesvn->checkout
