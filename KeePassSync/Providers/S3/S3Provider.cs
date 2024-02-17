@@ -163,7 +163,8 @@ namespace KeePassSync.Providers.S3 {
 				return false;
 			}
 		}
-		public string BucketName => m_UserControl.BucketName?.ToLower();
+		//public string BucketName => m_UserControl.BucketName?.ToLower();
+		public string BucketName { get { return m_UserControl.BucketName == null ? null : m_UserControl.BucketName.ToLower(); } }
 		public override KeePassSyncErr GetFile(PwEntry entry, string remoteFilename, string localFilename) {
 			DecodeEntry(entry);
 			var client = GetClient();
@@ -177,7 +178,8 @@ namespace KeePassSync.Providers.S3 {
 					memStream.Seek(0, SeekOrigin.Begin);
 					var hash = GetSHA1(memStream);
 					if (!obj.ChecksumSHA1.Equals(hash, StringComparison.OrdinalIgnoreCase))
-						throw new Exception($"File downloaded but our hash of: {hash} does not match server hash of: {obj.ChecksumSHA1}");
+						//throw new Exception($"File downloaded but our hash of: {hash} does not match server hash of: {obj.ChecksumSHA1}");
+						throw new Exception("File downloaded but our hash of: " + hash +" does not match server hash of: " + obj.ChecksumSHA1);
 
 					using (var fs = File.OpenWrite(localFilename)) {
 						memStream.Seek(0, SeekOrigin.Begin);

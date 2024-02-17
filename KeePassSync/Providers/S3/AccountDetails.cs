@@ -28,8 +28,11 @@ namespace KeePassSync.Providers.S3 {
 		}
 
 		private void AccountDetails_Load(object sender, EventArgs e) {
-
+			
 		}
 
+		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+			System.Diagnostics.Process.Start("https://github.com/mitchcapper/KeePassSync/blob/master/AMAZON_S3.md");
+		}
 	}
 }

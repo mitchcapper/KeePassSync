@@ -3,7 +3,7 @@ What is KeePassSync?
 
 KeePassSync is a KeePass plugin that synchronizes your database using various online storage providers. This allows two or more computers to easily keep their data in sync.  It was originally created in 2008 by Shawn Casey, shawn.casey@gmail.com and is currently maintained in this GitHub repository.
 
-This plugin will NOT work with KeePass v1.x.
+This plugin will NOT work with KeePass v1.x. Thanks to https://github.com/walterpg/plgx-build-tasks for modernizing the PLGX build process.
 
 Requirements:
 -------------

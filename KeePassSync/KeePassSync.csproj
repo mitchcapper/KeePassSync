@@ -16,6 +16,7 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+	  <LangVersion>5</LangVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -44,5 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.7.305.22" />
+    <PackageReference Include="PlgxBuildTasks" Version="1.1.2-beta">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>
