@@ -1,3 +1,7 @@
+2024-02-17: v7.2
+- Don't auto-lowercase S3 bucket names, legacy allows different cases
+- Don't compare sha1 hashes when they don't exist (legacy kpsync uploads)
+
 2024-02-17: v7.1
 - Amazon S3 updated to use SDK
 - Project style changed and updated

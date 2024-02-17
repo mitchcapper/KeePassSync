@@ -19,13 +19,13 @@ How to install:
 
 To install a plugin, follow these steps:
 
-1. Download the plugin from the page above and unpack the ZIP file to a directory of your choice.
-2. Copy the unpacked plugin files into the KeePass directory (where the KeePass.exe is) or a subdirectory of it.
+1. Download the plgx of the plugin from the releases page at: https://github.com/mitchcapper/KeePassSync/releases
+2. Copy the plgx file to the KeePass Plugins folder
 3. Restart KeePass in order to load the new plugin.
 
-In other words, to "install" a plugin you simply need to copy it somewhere into the KeePass directory, that's all.
+Note: If you have a very-old version of KeePassSync please delete the KeePassSync*.dll from the plugin folder.
 
-To "uninstall" a plugin, delete the plugin files.
+To "uninstall" a plugin, delete the the PLGX.
 
 How to use:
 -----------

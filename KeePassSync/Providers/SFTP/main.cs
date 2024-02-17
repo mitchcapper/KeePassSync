@@ -113,7 +113,7 @@ namespace KeePassSync.Providers.SFTP {
 						break;
 				}
 				if (!System.IO.File.Exists(exec_path)) {
-					m_MainInterface.SetStatus(StatusPriority.eMessageBoxInfo, "Unable to find pscp/plink.exe at the path specified please check");
+					m_MainInterface.SetStatus(StatusPriority.eMessageBoxInfo, "Unable to find pscp/plink.exe at the path: " + exec_path + " specified please check");
 					return KeePassSyncErr.Error;
 				}
 				process.StartInfo.FileName = exec_path;
