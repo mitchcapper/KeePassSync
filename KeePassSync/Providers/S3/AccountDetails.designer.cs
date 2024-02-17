@@ -30,9 +30,9 @@
 			this.label4 = new System.Windows.Forms.Label();
 			this.txtSecretAccessKey = new System.Windows.Forms.TextBox();
 			this.label6 = new System.Windows.Forms.Label();
-			this.label7 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.cbxDailyBackups = new System.Windows.Forms.CheckBox();
+			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -50,7 +50,7 @@
 			this.txtAccessKey.Location = new System.Drawing.Point(212, 19);
 			this.txtAccessKey.Margin = new System.Windows.Forms.Padding(26, 6, 6, 6);
 			this.txtAccessKey.Name = "txtAccessKey";
-			this.txtAccessKey.Size = new System.Drawing.Size(490, 31);
+			this.txtAccessKey.Size = new System.Drawing.Size(390, 31);
 			this.txtAccessKey.TabIndex = 2;
 			// 
 			// label3
@@ -66,9 +66,9 @@
 			// txtBucketName
 			// 
 			this.txtBucketName.Location = new System.Drawing.Point(162, 119);
-			this.txtBucketName.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+			this.txtBucketName.Margin = new System.Windows.Forms.Padding(6);
 			this.txtBucketName.Name = "txtBucketName";
-			this.txtBucketName.Size = new System.Drawing.Size(540, 31);
+			this.txtBucketName.Size = new System.Drawing.Size(440, 31);
 			this.txtBucketName.TabIndex = 4;
 			// 
 			// label4
@@ -84,61 +84,62 @@
 			// txtSecretAccessKey
 			// 
 			this.txtSecretAccessKey.Location = new System.Drawing.Point(212, 69);
-			this.txtSecretAccessKey.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+			this.txtSecretAccessKey.Margin = new System.Windows.Forms.Padding(6);
 			this.txtSecretAccessKey.Name = "txtSecretAccessKey";
 			this.txtSecretAccessKey.PasswordChar = '*';
-			this.txtSecretAccessKey.Size = new System.Drawing.Size(490, 31);
+			this.txtSecretAccessKey.Size = new System.Drawing.Size(390, 31);
 			this.txtSecretAccessKey.TabIndex = 3;
 			// 
 			// label6
 			// 
 			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(42, 244);
+			this.label6.Location = new System.Drawing.Point(16, 232);
 			this.label6.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-			this.label6.MaximumSize = new System.Drawing.Size(700, 0);
+			this.label6.MaximumSize = new System.Drawing.Size(600, 0);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(569, 25);
+			this.label6.Size = new System.Drawing.Size(569, 50);
 			this.label6.TabIndex = 9;
-			this.label6.Text = "If the bucket does not exist it will be greated automatically.";
-			// 
-			// label7
-			// 
-			this.label7.AutoSize = true;
-			this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label7.Location = new System.Drawing.Point(6, 219);
-			this.label7.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(44, 13);
-			this.label7.TabIndex = 10;
-			this.label7.Text = "Notes:";
+			this.label6.Text = "If the bucket does not exist it will be greated automatically (assuming this key " +
+    "has create rights). ";
 			// 
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(6, 171);
+			this.label2.Location = new System.Drawing.Point(6, 170);
 			this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(585, 25);
+			this.label2.Size = new System.Drawing.Size(520, 25);
 			this.label2.TabIndex = 11;
-			this.label2.Text = "Create Daily Backups (stores last 30 days, 1 backup a day):";
+			this.label2.Text = "Create Daily Backups (last 30 days, 1 backup a day):";
 			// 
 			// cbxDailyBackups
 			// 
 			this.cbxDailyBackups.AutoSize = true;
-			this.cbxDailyBackups.Location = new System.Drawing.Point(582, 171);
-			this.cbxDailyBackups.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+			this.cbxDailyBackups.Location = new System.Drawing.Point(574, 169);
+			this.cbxDailyBackups.Margin = new System.Windows.Forms.Padding(6);
 			this.cbxDailyBackups.Name = "cbxDailyBackups";
-			this.cbxDailyBackups.Size = new System.Drawing.Size(15, 14);
+			this.cbxDailyBackups.Size = new System.Drawing.Size(28, 27);
 			this.cbxDailyBackups.TabIndex = 12;
 			this.cbxDailyBackups.UseVisualStyleBackColor = true;
+			// 
+			// linkLabel1
+			// 
+			this.linkLabel1.AutoSize = true;
+			this.linkLabel1.Location = new System.Drawing.Point(6, 199);
+			this.linkLabel1.Name = "linkLabel1";
+			this.linkLabel1.Size = new System.Drawing.Size(184, 25);
+			this.linkLabel1.TabIndex = 13;
+			this.linkLabel1.TabStop = true;
+			this.linkLabel1.Text = "Setup Instructions";
+			this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
 			// 
 			// AccountDetails
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.linkLabel1);
 			this.Controls.Add(this.cbxDailyBackups);
 			this.Controls.Add(this.label2);
-			this.Controls.Add(this.label7);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.txtSecretAccessKey);
 			this.Controls.Add(this.label4);
@@ -146,9 +147,9 @@
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.txtAccessKey);
 			this.Controls.Add(this.label1);
-			this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+			this.Margin = new System.Windows.Forms.Padding(6);
 			this.Name = "AccountDetails";
-			this.Size = new System.Drawing.Size(744, 296);
+			this.Size = new System.Drawing.Size(624, 296);
 			this.Load += new System.EventHandler(this.AccountDetails_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -164,8 +165,8 @@
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.TextBox txtSecretAccessKey;
 		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.CheckBox cbxDailyBackups;
+		private System.Windows.Forms.LinkLabel linkLabel1;
 	}
 }
