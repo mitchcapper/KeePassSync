@@ -7,12 +7,12 @@ This plugin will NOT work with KeePass v1.x. Thanks to https://github.com/walter
 
 <!-- MarkdownTOC -->
 
-- [Requirements:](#requirements)
-- [Changes:](#changes)
-- [How to install:](#how-to-install)
-- [How to use:](#how-to-use)
-- [Services:](#services)
-- [How to compile:](#how-to-compile)
+- [Requirements](#requirements)
+- [Changes](#changes)
+- [How to install](#how-to-install)
+- [How to use](#how-to-use)
+- [Services](#services)
+- [How to compile](#how-to-compile)
 - [Service Specific Notes](#service-specific-notes)
 	- [Amazon S3 \(and other compatible providers\)](#amazon-s3-and-other-compatible-providers)
 	- [SFTP/FTP](#sftpftp)
@@ -21,16 +21,16 @@ This plugin will NOT work with KeePass v1.x. Thanks to https://github.com/walter
 <!-- /MarkdownTOC -->
 
 
-Requirements:
+Requirements
 -------------
 
 - KeePass 2.09 or higher
 
-Changes:
+Changes
 -------------
 See [Change Log](ChangeLog.md) for details
 
-How to install:
+How to install
 ---------------
 
 To install a plugin, follow these steps:
@@ -43,7 +43,7 @@ Note: If you have a very-old version of KeePassSync please delete the KeePassSyn
 
 To "uninstall" a plugin, delete the the PLGX.
 
-How to use:
+How to use
 -----------
 
 From the KeePass main menu, select Tools->KeePassSync->Show Options...
@@ -56,7 +56,7 @@ Once you go to another computer, you will want to open the database from the onl
 
 For each services specific configuration guide please see that section below.
 
-Services:
+Services
 ---------------
 
 KeePassSync supports the following services natively (although other users can add other services):
@@ -79,7 +79,7 @@ KeePassSync supports the following services natively (although other users can a
 	- Any of the many other compat providers, for several more see https://rclone.org/s3/
 
 
-How to compile:
+How to compile
 ---------------
 
 This solution is compiled using Visual Studio 2022.
