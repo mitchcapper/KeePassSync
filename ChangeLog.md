@@ -1,9 +1,10 @@
-2016-04-01: v7.1
+2024-02-17: v7.1
 - Amazon S3 updated to use SDK
 - Project style changed and updated
 - DigitalBucket removed (adios)
 - Added update checks
 - Project migrated to GitHub and git
+- Use amazing PlgxBuildTasks to modernize plgx building
 
 
 2016-04-01: v6.10
