@@ -22,6 +22,9 @@ namespace KeePassSync.Providers.S3 {
 
 		private const string access_key_id_field = PwDefs.UserNameField;
 		private const string bucket_name_field = PwDefs.UrlField;
+		private const string use_checksums_field = "use_checksums";
+		private const string use_acls_field = "use_acls";
+		private const string custom_service_url_field = "service_url";
 		private const string create_backups_field = "create_backups";
 
 		private const string secret_access_key_field = PwDefs.PasswordField;
@@ -41,18 +44,28 @@ namespace KeePassSync.Providers.S3 {
 			m_UserControl.AccessKey = read_PwEntry_string(entry, access_key_id_field);
 			m_UserControl.SecretAccessKey = read_PwEntry_string(entry, secret_access_key_field);
 			m_UserControl.BucketName = read_PwEntry_string(entry, bucket_name_field);
-			String backup_str = read_PwEntry_string(entry, create_backups_field);
 
-			m_UserControl.CreateBackups = false;
-			if (backup_str == "true")
-				m_UserControl.CreateBackups = true;
+			m_UserControl.CreateBackups = GetBoolField(entry, create_backups_field);
+			m_UserControl.UseACLs = GetBoolField(entry, use_acls_field);
+			m_UserControl.UseChecksums = GetBoolField(entry, use_checksums_field);
+			m_UserControl.ServiceURL = read_PwEntry_string(entry, custom_service_url_field);
+		}
+		private bool GetBoolField(PwEntry entry, String fieldname) {
+			var str = read_PwEntry_string(entry, fieldname);
+			return str == "true";
+		}
+		private void SetBoolField(PwEntry entry, String fieldname, bool value) {
+			write_PwEntry_string(entry, fieldname, value ? "true" : "false", false);
 		}
 
 		public override void EncodeEntry(PwEntry entry) {
 			write_PwEntry_string(entry, access_key_id_field, m_UserControl.AccessKey, false);
 			write_PwEntry_string(entry, secret_access_key_field, m_UserControl.SecretAccessKey, memprotect_secret_access_key);
 			write_PwEntry_string(entry, bucket_name_field, m_UserControl.BucketName, false);
-			write_PwEntry_string(entry, create_backups_field, m_UserControl.CreateBackups ? "true" : "false", false);
+			write_PwEntry_string(entry, custom_service_url_field, m_UserControl.ServiceURL, false);
+			SetBoolField(entry, create_backups_field, m_UserControl.CreateBackups);
+			SetBoolField(entry, use_acls_field, m_UserControl.UseACLs);
+			SetBoolField(entry, use_checksums_field, m_UserControl.UseChecksums);
 		}
 		public void write_PwEntry_string(PwEntry entry, String key, String value, bool in_memory_encrypt) {
 			entry.Strings.Set(key, new ProtectedString(in_memory_encrypt, value));
@@ -90,9 +103,25 @@ namespace KeePassSync.Providers.S3 {
 				return GetDatabases(m_OptionData.PasswordEntry);
 			}
 		}
+		private bool UsePayloadSigning { get { return String.IsNullOrWhiteSpace(m_UserControl.ServiceURL); } }
 		private AmazonS3Client GetClient() {
+			var isS3Official = String.IsNullOrWhiteSpace(m_UserControl.ServiceURL);
+			if (!isS3Official && m_UserControl.ServiceURL.StartsWith("http", StringComparison.CurrentCultureIgnoreCase) == false)
+				m_UserControl.ServiceURL = "https://" + m_UserControl.ServiceURL;
 
-			return new AmazonS3Client(m_UserControl.AccessKey, m_UserControl.SecretAccessKey, new AmazonS3Config { ServiceURL = "https://s3.amazonaws.com" });
+			var url = isS3Official ? "https://s3.amazonaws.com" : m_UserControl.ServiceURL;
+			var cfg = new AmazonS3Config { ServiceURL = url };
+			//cfg.ProxyHost = "127.0.0.1";cfg.ProxyPort = 1234;
+			 List<string> headerRemove= null;
+			if (!isS3Official) {
+				headerRemove = new List<string> {"x-amz-tagging-directive"};
+			}
+
+
+			var client = new OurAmazonS3Client(m_UserControl.AccessKey, m_UserControl.SecretAccessKey, cfg,headerRemove);
+
+			return client;
+
 		}
 		public override KeePassSyncErr PutFile(PwEntry entry, string remoteFilename, string localFilename) {
 			try {
@@ -106,14 +135,22 @@ namespace KeePassSync.Providers.S3 {
 					S3AccessControlList acl = null;
 					if (FileExists(remoteFilename)) {
 						string backupFilename = remoteFilename + ".bkup_day" + DateTime.Today.Day;
-						acl = client.GetACL(new GetACLRequest() { BucketName = BucketName, Key = remoteFilename }).AccessControlList;
-						if (m_UserControl.CreateBackups)
-							client.CopyObject(BucketName, remoteFilename, BucketName, backupFilename);
+						if (m_UserControl.UseACLs)
+							acl = client.GetACL(new GetACLRequest() { BucketName = BucketName, Key = remoteFilename }).AccessControlList;
+						if (m_UserControl.CreateBackups) {
+							var copy = new CopyObjectRequest { DestinationBucket = BucketName, SourceBucket = BucketName, SourceKey = remoteFilename, DestinationKey = backupFilename };
+
+							
+							client.CopyObject(copy);
+						}
 
 
 					}
 					var hash = GetSHA1(fs); //s3 will auto seek to start on stream after
-					client.PutObject(new PutObjectRequest { BucketName = BucketName, Key = remoteFilename, InputStream = fs, AutoCloseStream = false, ChecksumSHA1 = hash });
+					var req = new PutObjectRequest { BucketName = BucketName, Key = remoteFilename, InputStream = fs, AutoCloseStream = false, DisablePayloadSigning = !UsePayloadSigning };
+					if (m_UserControl.UseChecksums)
+						req.ChecksumSHA1 = hash;
+					client.PutObject(req);
 					if (acl != null) {
 						try {
 							client.PutACL(new PutACLRequest { BucketName = BucketName, Key = remoteFilename, AccessControlList = acl });
@@ -171,18 +208,22 @@ namespace KeePassSync.Providers.S3 {
 			var client = GetClient();
 			try {
 				verify_bucket_or_create(BucketName);
-				var obj = client.GetObject(new GetObjectRequest {BucketName = BucketName, Key = remoteFilename,ChecksumMode = ChecksumMode.ENABLED });
+				var req = new GetObjectRequest { BucketName = BucketName, Key = remoteFilename };
+				if (m_UserControl.UseChecksums)
+					req.ChecksumMode = ChecksumMode.ENABLED;
+
+				var obj = client.GetObject(req);
 				using (var memStream = new MemoryStream()) {
 					using (var resp = obj.ResponseStream) {
 						resp.CopyTo(memStream);
 					}
 					memStream.Seek(0, SeekOrigin.Begin);
 					var hash = GetSHA1(memStream);
-					
+
 					//the alg must have been set to sha1 during upload for this to work, prior to 2024 we didn't use sha, in addition if a user manually copied it might lose the SHA checksum
-					if (obj.ResponseMetadata.ChecksumAlgorithm == Amazon.Runtime.CoreChecksumAlgorithm.SHA1 && !obj.ChecksumSHA1.Equals(hash, StringComparison.OrdinalIgnoreCase))
+					if (m_UserControl.UseChecksums && obj.ResponseMetadata.ChecksumAlgorithm == Amazon.Runtime.CoreChecksumAlgorithm.SHA1 && !obj.ChecksumSHA1.Equals(hash, StringComparison.OrdinalIgnoreCase))
 						//throw new Exception($"File downloaded but our hash of: {hash} does not match server hash of: {obj.ChecksumSHA1}");
-						throw new Exception("File downloaded but our hash of: " + hash +" does not match server hash of: " + obj.ChecksumSHA1);
+						throw new Exception("File downloaded but our hash of: " + hash + " does not match server hash of: " + obj.ChecksumSHA1);
 
 					using (var fs = File.OpenWrite(localFilename)) {
 						memStream.Seek(0, SeekOrigin.Begin);
@@ -190,7 +231,8 @@ namespace KeePassSync.Providers.S3 {
 					}
 				}
 			} catch (Exception e) {
-				if (e.Message == "The specified key does not exist.")
+				var ae = e as AmazonS3Exception;
+				if (e.Message == "The specified key does not exist." || (ae != null && ae.ErrorCode=="NoSuchKey") )//errorcode check for 3rd parties that may not conform
 					return KeePassSyncErr.FileNotFound;
 				return convert_exception(e);
 			}
@@ -234,7 +276,7 @@ namespace KeePassSync.Providers.S3 {
 			m_MainInterface.SetStatus(priority, "KeyPassSync_S3: " + msg);
 			return ret;
 		}
-		
+
 
 		private KeePassSyncErr verify_bucket_or_create(String bucket_name) {
 			try {

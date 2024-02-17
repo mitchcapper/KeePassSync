@@ -1,9 +1,25 @@
 What is KeePassSync?
 ---------------
 
-KeePassSync is a KeePass plugin that synchronizes your database using various online storage providers. This allows two or more computers to easily keep their data in sync.  It was originally created in 2008 by Shawn Casey, shawn.casey@gmail.com and is currently maintained in this GitHub repository.
+KeePassSync is a KeePass plugin that synchronizes your database using an online storage provider of your choice, any Rclone/Rsync compat storage, or FTP/SFTP. This allows two or more computers to easily keep their data in sync.  It was originally created in 2008 by Shawn Casey, shawn.casey@gmail.com and is currently maintained in this GitHub repository.  If you are looking for a provider recommendation consider CloudFlare R2.  It is free for KeePass databases up to 10GB.
 
 This plugin will NOT work with KeePass v1.x. Thanks to https://github.com/walterpg/plgx-build-tasks for modernizing the PLGX build process.
+
+<!-- MarkdownTOC -->
+
+- [Requirements:](#requirements)
+- [Changes:](#changes)
+- [How to install:](#how-to-install)
+- [How to use:](#how-to-use)
+- [Services:](#services)
+- [How to compile:](#how-to-compile)
+- [Service Specific Notes](#service-specific-notes)
+	- [Amazon S3 \(and other compatible providers\)](#amazon-s3-and-other-compatible-providers)
+	- [SFTP/FTP](#sftpftp)
+- [Help!?!](#help)
+
+<!-- /MarkdownTOC -->
+
 
 Requirements:
 -------------
@@ -47,7 +63,21 @@ KeePassSync supports the following services natively (although other users can a
 
 - FTP/SFTP (through plink/psftp from PUTTY)
 
-- Amazon S3
+- Amazon S3 or S3 Compatible services, this includes:
+	- [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/) - free forever basically, 10GB a month which is way more than any keepass DB
+	- [Rclone Serve S3](https://rclone.org/commands/rclone_serve_s3/) - Free open source software to use as an interface to anything RClone can interface with
+	- [Backblaze B2](https://www.backblaze.com/cloud-storage) - Very cheap
+	- Alibaba Cloud
+	- DigitalOcean
+	- Dreamhost
+	- [Synology C2](https://c2.synology.com/en-us)
+	- Linode Object Storage
+	- IDrive E2
+	- Huawei OBS
+	- IBM COS S3
+	- [Google GCS](https://cloud.google.com/storage)
+	- Any of the many other compat providers, for several more see https://rclone.org/s3/
+
 
 How to compile:
 ---------------
@@ -58,7 +88,7 @@ For more information: http://keepass.info/help/v2_dev/plg_index.html
 
 ## Service Specific Notes
 
-### Amazon S3
+### Amazon S3 (and other compatible providers)
 
 Please see the dedicated [Amazon S3](AMAZON_S3.md) instructions.
 

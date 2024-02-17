@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 
 namespace KeePassSync.Providers.S3 {
@@ -21,6 +21,18 @@ namespace KeePassSync.Providers.S3 {
 			get { return cbxDailyBackups.Checked; }
 			set { cbxDailyBackups.Checked = value; }
 
+		}
+		public string ServiceURL {
+			get { return txtServiceUrl.Text; }
+			set { txtServiceUrl.Text = value; }
+		}
+		public bool UseChecksums {
+			get { return cbxTransferChecksums.Checked; }
+			set { cbxTransferChecksums.Checked = value; }
+		}
+		public bool UseACLs {
+			get { return cbxCopyACLS.Checked; }
+			set { cbxCopyACLS.Checked = value; }
 		}
 
 		public AccountDetails() {
