@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net472</TargetFramework>
 		<OutputType>Library</OutputType>
@@ -18,7 +18,7 @@
 		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 
 		<ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-		<LangVersion>5</LangVersion>
+		<LangVersion>preview</LangVersion>
 		<UseApplicationTrust>false</UseApplicationTrust>
 		<BootstrapperEnabled>true</BootstrapperEnabled>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>

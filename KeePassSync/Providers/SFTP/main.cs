@@ -102,8 +102,11 @@ namespace KeePassSync.Providers.SFTP {
 					commandStr += " " + command_after;
 
 				String exec_path = m_UserControl.ExecRoot;
-				if (String.IsNullOrEmpty(exec_path))
+				if (String.IsNullOrEmpty(exec_path)){
 					exec_path = KeePassSyncExt.PluginDirectory;
+					if (! File.Exists(System.IO.Path.Combine( exec_path,"pscp.exe")))
+						exec_path = KeePassSyncExt.KeePassDir;
+				}
 				switch (exec) {
 					case EXEC.PSCP:
 						exec_path += "\\" + "pscp.exe";

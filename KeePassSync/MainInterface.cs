@@ -119,6 +119,7 @@ namespace KeePassSync {
 		private bool m_ValidOnlineOptions;
 		private Dictionary<string, IOnlineProvider> m_OnlineProviders;
 		private static string m_PluginDirectory;
+		private static string m_keepassDirectory;
 		#endregion
 
 		#region -- Events --
@@ -174,17 +175,12 @@ namespace KeePassSync {
 		/// <summary>
 		/// Location of the main KeePassSync directory
 		/// </summary>
-		public static string PluginDirectory {
-			get {
-				if (m_PluginDirectory == null) {
-					Assembly ass = Assembly.GetCallingAssembly();
-					string path = ass.Location;
-					m_PluginDirectory = path.Remove(path.LastIndexOf('\\'));
-				}
-				return m_PluginDirectory;
-			}
-		}
+		public static string PluginDirectory => m_PluginDirectory ??= new FileInfo(Assembly.GetCallingAssembly().Location).DirectoryName;
 		#endregion
+		/// <summary>
+		/// keepass directory itself
+		/// </summary>
+		public static string KeePassDir => m_keepassDirectory ??= new FileInfo(Process.GetCurrentProcess().MainModule.FileName).DirectoryName;
 
 		public override string UpdateUrl {
 			get {

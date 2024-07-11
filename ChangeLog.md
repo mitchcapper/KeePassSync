@@ -1,8 +1,12 @@
-2024-02-17: v7.2
+2024-07-10: v8.2
+- For SFTP check the application  directory for keepass for psftp binaries
+- 
+
+2024-02-17: v8.1
 - Don't auto-lowercase S3 bucket names, legacy allows different cases
 - Don't compare sha1 hashes when they don't exist (legacy kpsync uploads)
 
-2024-02-17: v7.1
+2024-02-17: v8.0
 - Amazon S3 updated to use SDK
 - Project style changed and updated
 - DigitalBucket removed (adios)
